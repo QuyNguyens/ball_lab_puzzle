@@ -1,0 +1,274 @@
+{
+  "@@locale": "vi",
+  "appTitle": "Ball Lab Puzzle",
+  "backTooltip": "Quay lại",
+  "levelTitle": "Level {levelId}",
+  "@levelTitle": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "levelBadge": "LEVEL {levelId}",
+  "@levelBadge": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "movesLeftCount": "LƯỢT CÒN LẠI: {count}",
+  "@movesLeftCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionRestart": "Chơi lại",
+  "actionUndo": "Hoàn tác ({count})",
+  "@actionUndo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionUndoSimple": "Hoàn tác",
+  "actionHint": "Gợi ý ({count})",
+  "@actionHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "outOfUndosToast": "Bạn đã hết lượt Hoàn tác miễn phí hôm nay!",
+  "outOfHintsToast": "Bạn đã hết lượt Gợi ý miễn phí hôm nay!",
+  "gameInstruction": "Lượt: {current} / {max} • Phân loại bóng theo màu",
+  "@gameInstruction": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "tubesSolvedProgress": "Đã hoàn thành {completed} / {total}",
+  "@tubesSolvedProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "hintAlreadyCompleted": "Màn chơi đã hoàn thành!",
+  "hintNoMoveFound": "Không tìm thấy nước đi phù hợp. Hãy thử Hoàn tác hoặc Chơi lại!",
+  "victoryTitle": "THÍ NGHIỆM THÀNH CÔNG!",
+  "milestoneReached": "ĐẠT CỘT MỐC ĐẶC BIỆT!",
+  "levelMastered": "Đã chinh phục Level {levelId}",
+  "@levelMastered": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "victoryPerfect": "PHÂN LOẠI HOÀN HẢO!",
+  "victoryExcellent": "KẾT QUẢ XUẤT SẮC!",
+  "victoryGood": "HOÀN THÀNH THÍ NGHIỆM!",
+  "movesTakenLabel": "SỐ LƯỢT ĐI",
+  "parMovesLabel": "LƯỢT TỐI ƯU",
+  "starThresholds": "3★: ≤{threeStar} lượt  •  2★: ≤{twoStar} lượt",
+  "@starThresholds": {
+    "placeholders": {
+      "threeStar": {
+        "type": "int"
+      },
+      "twoStar": {
+        "type": "int"
+      }
+    }
+  },
+  "newBestRecord": "✨ KỶ LỤC MỚI!",
+  "buttonPlayAgain": "Chơi lại",
+  "buttonNextLevel": "Màn tiếp theo",
+  "buttonReturnToMap": "Về bản đồ",
+  "defeatTitle": "HẾT LƯỢT ĐI!",
+  "levelIncomplete": "Chưa hoàn thành Level {levelId}",
+  "@levelIncomplete": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "defeatMessage": "Bạn đã sử dụng hết {maxMoves} lượt cho thí nghiệm này. Hãy điều chỉnh chiến thuật và thử lại!",
+  "@defeatMessage": {
+    "placeholders": {
+      "maxMoves": {
+        "type": "int"
+      }
+    }
+  },
+  "movesUsedLabel": "LƯỢT ĐÃ DÙNG",
+  "maxLimitLabel": "GIỚI HẠN TỐI ĐA",
+  "outOfLivesTitle": "HẾT MẠNG CHƠI",
+  "outOfLivesMessage": "Bạn đã sử dụng hết 5 lượt chơi miễn phí hôm nay.\nSố mạng sẽ hồi phục vào nửa đêm (00:00 VN).",
+  "nextFreeRefillIn": "HỒI PHỤC MIỄN PHÍ SAU",
+  "watchVideoOption": "Xem video (+1 Mạng)",
+  "comingSoonTag": "SẮP RA MẮT",
+  "instantRefillOption": "Hồi phục năng lượng ngay",
+  "buttonBackToMap": "VỀ BẢN ĐỒ",
+  "mapTitle": "HÀNH TRÌNH BALL LAB",
+  "mapSubtitle": "Chọn thí nghiệm giải đố",
+  "previousChapterTooltip": "Chặng trước",
+  "nextChapterTooltip": "Chặng tiếp theo",
+  "chapterIndicator": "CHẶNG {current} / {total}",
+  "@chapterIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "chapterProgress": "Level {start} – {end}  •  ⭐ {stars}/{maxStars}",
+  "@chapterProgress": {
+    "placeholders": {
+      "start": {
+        "type": "int"
+      },
+      "end": {
+        "type": "int"
+      },
+      "stars": {
+        "type": "int"
+      },
+      "maxStars": {
+        "type": "int"
+      }
+    }
+  },
+  "activeLevelShort": "Lv {levelId}",
+  "@activeLevelShort": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "selectChapterTitle": "CHỌN CHẶNG THÍ NGHIỆM",
+  "chapterPickerSummary": "{chapters} Chặng  •  {levels} Level",
+  "@chapterPickerSummary": {
+    "placeholders": {
+      "chapters": {
+        "type": "int"
+      },
+      "levels": {
+        "type": "int"
+      }
+    }
+  },
+  "chapterItemTitle": "Chặng {number}",
+  "@chapterItemTitle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "nodePlay": "CHƠI",
+  "bossBadge": "BOSS",
+  "milestoneLevelDesc": "Thử thách cột mốc đặc biệt độ khó cao",
+  "normalLevelDesc": "Thí nghiệm phân loại màu sắc",
+  "statColors": "SỐ MÀU",
+  "statTubes": "SỐ ỐNG",
+  "statMaxMoves": "GIỚI HẠN LƯỢT",
+  "statBestRun": "KỶ LỤC",
+  "statNone": "Chưa có",
+  "movesUnit": "{moves} lượt",
+  "@movesUnit": {
+    "placeholders": {
+      "moves": {
+        "type": "int"
+      }
+    }
+  },
+  "starCondition": "≤ {moves} lượt",
+  "@starCondition": {
+    "placeholders": {
+      "moves": {
+        "type": "int"
+      }
+    }
+  },
+  "buttonStartExperiment": "BẮT ĐẦU THÍ NGHIỆM",
+  "levelLockedToast": "Hoàn thành Level {levelId} để mở khóa thí nghiệm này!",
+  "@levelLockedToast": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+
+  "authCreateAccount": "Tạo tài khoản",
+  "authCredentialsRequired": "Vui lòng nhập email và mật khẩu.",
+  "authEmailHint": "Nhập email của bạn",
+  "authEmailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+  "authEmailRequired": "Vui lòng nhập địa chỉ email",
+  "authLoginButton": "Đăng nhập",
+  "authLoginFailed": "Sai email hoặc mật khẩu.",
+  "authLoginSubtitle": "Bạn có thể đăng nhập bằng email và mật khẩu",
+  "authLoginTitle": "Đăng nhập",
+  "authPasswordHint": "Nhập mật khẩu của bạn",
+  "authPasswordLabel": "Mật khẩu",
+  "authRegisterButton": "Đăng ký",
+  "authRegisterCancel": "Hủy",
+  "authRegisterTitle": "Hồ sơ mới",
+  "authUsernameHint": "Nhập tên người dùng",
+  "authUsernameLabel": "Tên người dùng",
+  "authWelcome": "Chào mừng đến với ứng dụng",
+  "demoAreaBody": "Bạn có thể xem trang này vì quyền của bạn bao gồm khu vực \"{area}\".",
+  "@demoAreaBody": {
+    "description": "Body of the permission demo screens.",
+    "placeholders": {
+      "area": {
+        "type": "String",
+        "example": "profile"
+      }
+    }
+  },
+  "demoComponentRulesTitle": "Quy tắc thành phần",
+  "demoDeleteAccountHidden": "Xóa tài khoản (ẩn)",
+  "demoEditProfileDisabled": "Sửa hồ sơ (vô hiệu)",
+  "demoEmailReadonly": "Email (chỉ đọc)",
+  "demoOrdersTitle": "Đơn hàng",
+  "demoPermissionsTitle": "Bản demo phân quyền",
+  "demoProfileTitle": "Hồ sơ",
+  "demoReportsTitle": "Báo cáo",
+  "demoSettingsTitle": "Cài đặt",
+  "homeBottomNavFirst": "Trang chủ",
+  "homeBottomNavSecond": "Thông tin",
+  "homeInfo": "Thông tin",
+  "homeIntro": "Xin chào, tôi là Eren 👋🏽",
+  "homeMenuTitle": "Menu",
+  "homeMore": "Tìm hiểu thêm",
+  "homeThemeMode": "Chế độ giao diện",
+  "homeThemeModeDark": "Tối",
+  "homeThemeModeLight": "Sáng",
+  "homeThemeModeSystem": "Hệ thống",
+  "homeTitle": "Trang chủ",
+  "homeToggleLanguage": "Đổi ngôn ngữ",
+  "homeToggleTheme": "Đổi giao diện",
+  "soundEffectsLabel": "Hiệu ứng âm thanh"
+}

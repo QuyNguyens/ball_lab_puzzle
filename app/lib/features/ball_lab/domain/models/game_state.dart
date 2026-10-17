@@ -12,6 +12,7 @@ class GameState {
     required List<PuzzleMove> history,
     required this.moveCount,
     required this.isCompleted,
+    this.maxMoves = 20,
   }) : tubes = List<Tube>.unmodifiable(tubes),
        history = List<PuzzleMove>.unmodifiable(history) {
     if (levelId <= 0) {
@@ -26,6 +27,13 @@ class GameState {
         moveCount,
         'moveCount',
         'moveCount cannot be negative.',
+      );
+    }
+    if (maxMoves <= 0) {
+      throw ArgumentError.value(
+        maxMoves,
+        'maxMoves',
+        'maxMoves must be greater than zero.',
       );
     }
   }
@@ -45,12 +53,25 @@ class GameState {
   /// Whether the puzzle has been successfully solved.
   final bool isCompleted;
 
+  /// Maximum allowed moves for this level before defeat.
+  final int maxMoves;
+
+  /// Remaining moves available to the player before defeat.
+  int get movesLeft => (maxMoves - moveCount).clamp(0, maxMoves);
+
+  /// Whether the player has run out of moves without completing the puzzle.
+  ///
+  /// CRITICAL INVARIANT: If the puzzle is completed on the final move,
+  /// [isCompleted] is true and [isOutOfMoves] is false (VICTORY, not defeat).
+  bool get isOutOfMoves => !isCompleted && moveCount >= maxMoves;
+
   GameState copyWith({
     int? levelId,
     List<Tube>? tubes,
     List<PuzzleMove>? history,
     int? moveCount,
     bool? isCompleted,
+    int? maxMoves,
   }) {
     return GameState(
       levelId: levelId ?? this.levelId,
@@ -58,6 +79,7 @@ class GameState {
       history: history ?? this.history,
       moveCount: moveCount ?? this.moveCount,
       isCompleted: isCompleted ?? this.isCompleted,
+      maxMoves: maxMoves ?? this.maxMoves,
     );
   }
 
@@ -68,6 +90,7 @@ class GameState {
     if (levelId != other.levelId ||
         moveCount != other.moveCount ||
         isCompleted != other.isCompleted ||
+        maxMoves != other.maxMoves ||
         tubes.length != other.tubes.length ||
         history.length != other.history.length) {
       return false;
@@ -87,6 +110,7 @@ class GameState {
       levelId,
       moveCount,
       isCompleted,
+      maxMoves,
       Object.hashAll(tubes),
       Object.hashAll(history),
     );
@@ -94,5 +118,5 @@ class GameState {
 
   @override
   String toString() =>
-      'GameState(level: $levelId, moves: $moveCount, won: $isCompleted, tubes: ${tubes.length})';
+      'GameState(level: $levelId, moves: $moveCount, left: $movesLeft, max: $maxMoves, won: $isCompleted, tubes: ${tubes.length})';
 }

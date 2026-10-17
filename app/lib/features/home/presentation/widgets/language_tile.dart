@@ -15,12 +15,12 @@ class LanguageTile extends ConsumerWidget {
         /// follows the device; the choice is saved and survives a restart.
         ref
             .read(localeProvider.notifier)
-            .set(newValue ? const Locale('tr') : const Locale('en'));
+            .set(newValue ? const Locale('vi') : const Locale('en'));
       },
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
-      value: Localizations.localeOf(context).languageCode == 'tr',
+      value: Localizations.localeOf(context).languageCode == 'vi',
       title: Text(
         AppLocalizations.of(context).homeToggleLanguage,
         style: Theme.of(

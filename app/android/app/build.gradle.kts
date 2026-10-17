@@ -55,24 +55,12 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        resValue("string", "app_name", "Ball Lab Puzzle")
     }
 
-    // AGP 9 turns resValue off by default; the flavors use it for app_name.
+    // AGP turns resValue off by default; we enable it for app_name.
     buildFeatures {
         resValues = true
-    }
-
-    flavorDimensions += "env"
-
-    productFlavors {
-        listOf("dev", "staging", "prod").forEach { flavor ->
-            create(flavor) {
-                dimension = "env"
-                applicationIdSuffix = identity("$flavor.applicationIdSuffix")
-                versionNameSuffix = identity("$flavor.versionNameSuffix")
-                resValue("string", "app_name", identity("$flavor.name"))
-            }
-        }
     }
 
     signingConfigs {

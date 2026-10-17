@@ -3,6 +3,7 @@ import 'package:flutter_riverpod_template/features/ball_lab/domain/models/level_
 import 'package:flutter_riverpod_template/features/ball_lab/domain/models/tube.dart';
 import 'package:flutter_riverpod_template/features/ball_lab/domain/services/game_engine.dart';
 import 'package:flutter_riverpod_template/features/ball_lab/domain/services/level_provider_service.dart';
+import 'package:flutter_riverpod_template/features/ball_lab/domain/services/puzzle_solver.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,16 +12,18 @@ void main() {
 
   group('LevelProviderService - Catalog Structure', () {
     test('Contains at least 5 curated levels', () {
-      expect(service.totalLevels, greaterThanOrEqualTo(5));
-      expect(service.getLevels().length, equals(service.totalLevels));
+      expect(service.getLevels().length, equals(10));
+      expect(service.totalLevels, equals(999));
     });
 
     test('Retrieves level by ID and returns null for unknown ID', () {
       expect(service.getLevel(1), isNotNull);
       expect(service.getLevel(5), isNotNull);
-      expect(service.getLevel(999), isNull);
+      expect(service.getLevel(999), isNotNull);
+      expect(service.getLevel(1000), isNull);
       expect(service.hasLevel(1), isTrue);
-      expect(service.hasLevel(999), isFalse);
+      expect(service.hasLevel(999), isTrue);
+      expect(service.hasLevel(1000), isFalse);
     });
 
     test('All curated levels satisfy domain constraints', () {
@@ -113,6 +116,21 @@ void main() {
 
       expect(state.moveCount, equals(12));
       expect(state.isCompleted, isTrue);
+      expect(state.movesLeft, equals(level2.maxMoves - 12));
+      expect(state.isOutOfMoves, isFalse);
+    });
+
+    test('All curated levels have verified minMoves and solvable within maxMoves', () {
+      const PuzzleSolver solver = PuzzleSolver();
+      for (final LevelData level in service.getLevels()) {
+        expect(level.minMoves, isNotNull);
+        expect(level.maxMoves, greaterThan(level.minMoves!));
+
+        final int? shortestPath = solver.findShortestMoveCount(level);
+        expect(shortestPath, isNotNull, reason: 'Level ${level.levelId} must be solvable');
+        expect(shortestPath, equals(level.minMoves), reason: 'Level ${level.levelId} shortest path must match minMoves');
+        expect(shortestPath, lessThanOrEqualTo(level.maxMoves));
+      }
     });
   });
 }

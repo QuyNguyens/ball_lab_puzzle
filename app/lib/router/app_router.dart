@@ -8,6 +8,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../features/authentication/presentation/login/login_screen.dart';
+import '../features/ball_lab/presentation/screens/level_map_screen.dart';
 import '../features/demo/presentation/demo_area_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../l10n/app_localizations.dart';
@@ -20,6 +21,7 @@ part 'app_router.g.dart';
 enum SGRoute {
   splash,
   home,
+  game,
   login,
   register,
   forgotPassword,
@@ -111,6 +113,12 @@ GoRouter goRouter(Ref ref) {
         builder: (BuildContext context, GoRouterState state) =>
             const HomeScreen(),
       ).fade(),
+      GoRoute(
+        path: SGRoute.game.route,
+        name: SGRoute.game.name,
+        builder: (BuildContext context, GoRouterState state) =>
+            const LevelMapScreen(),
+      ).slide(),
       GoRoute(
         path: SGRoute.profile.route,
         name: SGRoute.profile.name,

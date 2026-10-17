@@ -16,10 +16,9 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 0.0.5+1
-resolution: workspace
 
 environment:
-  sdk: ^3.13.0
+  sdk: ^3.4.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -62,6 +61,7 @@ dependencies:
   hive_ce: ^2.11.1
   material_ui: ^1.6.0
   retrofit: ^4.10.0
+  audioplayers: ^6.8.1
 
 dev_dependencies:
   flutter_test:
@@ -95,7 +95,8 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   # A plain `flutter run` / `flutter build` without --flavor uses dev, never prod.
-  default-flavor: dev
+  # default-flavor is only supported in Flutter >= 3.27; commented out for compatibility with Flutter 3.22.3:
+  # default-flavor: dev
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -109,6 +110,7 @@ flutter:
     - assets/img/
     # Fonts for google_fonts (runtime fetching is off) and their OFL license.
     - assets/fonts/
+    - assets/audio/sfx/
 
   fonts:
     - family: Roboto

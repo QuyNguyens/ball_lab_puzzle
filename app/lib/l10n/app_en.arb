@@ -1,6 +1,226 @@
 {
   "@@locale": "en",
-  "appTitle": "Flutter Production Boilerplate",
+  "appTitle": "Ball Lab Puzzle",
+  "backTooltip": "Back",
+  "levelTitle": "Level {levelId}",
+  "@levelTitle": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "levelBadge": "LEVEL {levelId}",
+  "@levelBadge": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "movesLeftCount": "MOVES LEFT: {count}",
+  "@movesLeftCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionRestart": "Restart",
+  "actionUndo": "Undo ({count})",
+  "@actionUndo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionUndoSimple": "Undo",
+  "actionHint": "Hint ({count})",
+  "@actionHint": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "outOfUndosToast": "You have used all free Undo moves for today!",
+  "outOfHintsToast": "You have used all free Hints for today!",
+  "gameInstruction": "Moves: {current} / {max} • Sort all balls by color",
+  "@gameInstruction": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "tubesSolvedProgress": "{completed} / {total} Solved",
+  "@tubesSolvedProgress": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "hintAlreadyCompleted": "Level already completed!",
+  "hintNoMoveFound": "No helpful moves found. Try Undo or Restart!",
+  "victoryTitle": "EXPERIMENT COMPLETE!",
+  "milestoneReached": "MILESTONE REACHED!",
+  "levelMastered": "Level {levelId} Mastered",
+  "@levelMastered": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "victoryPerfect": "PERFECT SORTING!",
+  "victoryExcellent": "EXCELLENT LAB WORK!",
+  "victoryGood": "EXPERIMENT SOLVED!",
+  "movesTakenLabel": "MOVES TAKEN",
+  "parMovesLabel": "PAR MOVES",
+  "starThresholds": "3★: ≤{threeStar} moves  •  2★: ≤{twoStar} moves",
+  "@starThresholds": {
+    "placeholders": {
+      "threeStar": {
+        "type": "int"
+      },
+      "twoStar": {
+        "type": "int"
+      }
+    }
+  },
+  "newBestRecord": "✨ NEW BEST RECORD!",
+  "buttonPlayAgain": "Play Again",
+  "buttonNextLevel": "Next Level",
+  "buttonReturnToMap": "Return to Map",
+  "defeatTitle": "OUT OF MOVES!",
+  "levelIncomplete": "Level {levelId} Incomplete",
+  "@levelIncomplete": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "defeatMessage": "You have used all {maxMoves} allowed moves for this experiment. Re-calibrate your strategy and try again!",
+  "@defeatMessage": {
+    "placeholders": {
+      "maxMoves": {
+        "type": "int"
+      }
+    }
+  },
+  "movesUsedLabel": "MOVES USED",
+  "maxLimitLabel": "MAX LIMIT",
+  "outOfLivesTitle": "OUT OF LIVES",
+  "outOfLivesMessage": "You have used all 5 free daily experiment attempts.\nYour lives replenish every midnight (00:00 VN).",
+  "nextFreeRefillIn": "NEXT FREE REFILL IN",
+  "watchVideoOption": "Watch Lab Video (+1 Life)",
+  "comingSoonTag": "COMING SOON",
+  "instantRefillOption": "Instant Lab Energy Refill",
+  "buttonBackToMap": "BACK TO MAP",
+  "mapTitle": "BALL LAB JOURNEY",
+  "mapSubtitle": "Select a puzzle experiment",
+  "previousChapterTooltip": "Previous chapter",
+  "nextChapterTooltip": "Next chapter",
+  "chapterIndicator": "CHAPTER {current} / {total}",
+  "@chapterIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "chapterProgress": "Level {start} – {end}  •  ⭐ {stars}/{maxStars}",
+  "@chapterProgress": {
+    "placeholders": {
+      "start": {
+        "type": "int"
+      },
+      "end": {
+        "type": "int"
+      },
+      "stars": {
+        "type": "int"
+      },
+      "maxStars": {
+        "type": "int"
+      }
+    }
+  },
+  "activeLevelShort": "Lv {levelId}",
+  "@activeLevelShort": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+  "selectChapterTitle": "SELECT CHAPTER",
+  "chapterPickerSummary": "{chapters} Chapters  •  {levels} Levels",
+  "@chapterPickerSummary": {
+    "placeholders": {
+      "chapters": {
+        "type": "int"
+      },
+      "levels": {
+        "type": "int"
+      }
+    }
+  },
+  "chapterItemTitle": "Chapter {number}",
+  "@chapterItemTitle": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "nodePlay": "PLAY",
+  "bossBadge": "BOSS",
+  "milestoneLevelDesc": "High-difficulty Laboratory Milestone challenge",
+  "normalLevelDesc": "Color segregation experiment",
+  "statColors": "COLORS",
+  "statTubes": "TUBES",
+  "statMaxMoves": "MAX MOVES",
+  "statBestRun": "BEST RUN",
+  "statNone": "None",
+  "movesUnit": "{moves} moves",
+  "@movesUnit": {
+    "placeholders": {
+      "moves": {
+        "type": "int"
+      }
+    }
+  },
+  "starCondition": "≤ {moves} moves",
+  "@starCondition": {
+    "placeholders": {
+      "moves": {
+        "type": "int"
+      }
+    }
+  },
+  "buttonStartExperiment": "START EXPERIMENT",
+  "levelLockedToast": "Complete Level {levelId} to unlock this experiment!",
+  "@levelLockedToast": {
+    "placeholders": {
+      "levelId": {
+        "type": "int"
+      }
+    }
+  },
+
   "authCreateAccount": "Create an account",
   "authCredentialsRequired": "Please enter your email and password.",
   "authEmailHint": "Enter your email",
@@ -49,5 +269,6 @@
   "homeThemeModeSystem": "System",
   "homeTitle": "Home",
   "homeToggleLanguage": "Change Language",
-  "homeToggleTheme": "Change Theme"
+  "homeToggleTheme": "Change Theme",
+  "soundEffectsLabel": "Sound Effects"
 }

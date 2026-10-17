@@ -5,7 +5,7 @@ version: 0.1.0
 resolution: workspace
 
 environment:
-  sdk: ^3.13.0
+  sdk: ^3.4.0
 
 # The app never depends on this package. Removing a Module also removes its
 # line here and its use cases.

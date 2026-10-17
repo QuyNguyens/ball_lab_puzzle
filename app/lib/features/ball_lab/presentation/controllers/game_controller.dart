@@ -1,11 +1,15 @@
+import 'dart:math' as math;
+
 import 'package:meta/meta.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../domain/models/game_state.dart';
 import '../../domain/models/level_data.dart';
+import '../../domain/models/puzzle_move.dart';
 import '../../domain/models/tube.dart';
 import '../../domain/services/game_engine.dart';
 import '../../domain/services/level_provider_service.dart';
+import 'audio_controller.dart';
 
 part 'game_controller.g.dart';
 
@@ -131,8 +135,8 @@ class GameController extends _$GameController {
 
   /// Handles user interaction when tapping the tube at [index].
   void selectTube(int index) {
-    // If the game is won, ignore further input.
-    if (state.gameState.isCompleted) {
+    // If the game is won or out of moves, ignore further input.
+    if (state.gameState.isCompleted || state.gameState.isOutOfMoves) {
       return;
     }
 
@@ -177,6 +181,7 @@ class GameController extends _$GameController {
         clearSelection: true,
         clearError: true,
       );
+      ref.read(gameAudioServiceProvider).playBallMove();
     } else {
       // Transfer is invalid. Check if the tapped tube is another valid source.
       final Tube candidate = state.gameState.tubes[index];
@@ -188,8 +193,44 @@ class GameController extends _$GameController {
     }
   }
 
+  /// Restores a previously saved active game session.
+  ///
+  /// Synchronizes maxMoves with the authoritative level definition to prevent
+  /// legacy inflated budgets from persisting across sessions.
+  bool restoreSession(int levelId, List<Tube> tubes, int moveCount, int maxMoves) {
+    final LevelProviderService levelService = ref.read(
+      levelProviderServiceProvider,
+    );
+    final LevelData? level = levelService.getLevel(levelId);
+    if (level == null) {
+      return false;
+    }
+
+    final int effectiveMaxMoves = math.max(level.maxMoves, moveCount);
+
+    state = GamePlayState(
+      gameState: GameState(
+        levelId: levelId,
+        tubes: tubes,
+        history: const <PuzzleMove>[],
+        moveCount: moveCount,
+        isCompleted: false,
+        maxMoves: effectiveMaxMoves,
+      ),
+      currentLevel: level,
+    );
+    return true;
+  }
+
   /// Undoes the previous move.
-  void undo() {
+  /// Returns `true` if a move was successfully undone, `false` if history was empty
+  /// or game is already completed/lost.
+  bool undo() {
+    if (state.gameState.isCompleted ||
+        state.gameState.isOutOfMoves ||
+        state.gameState.history.isEmpty) {
+      return false;
+    }
     final GameEngine engine = ref.read(gameEngineProvider);
     final GameState newState = engine.undoLastMove(state.gameState);
     state = state.copyWith(
@@ -197,6 +238,7 @@ class GameController extends _$GameController {
       clearSelection: true,
       clearError: true,
     );
+    return true;
   }
 
   /// Restarts the current level from its initial configuration.
@@ -208,6 +250,44 @@ class GameController extends _$GameController {
       clearSelection: true,
       clearError: true,
     );
+  }
+
+  /// Directly executes a ball transfer from [fromIndex] to [toIndex].
+  ///
+  /// Returns `true` if the move was valid and executed, `false` otherwise.
+  /// Designed for drag-and-drop interactions where both source and destination
+  /// are determined upon drop.
+  bool moveBall(int fromIndex, int toIndex) {
+    if (state.gameState.isCompleted || state.gameState.isOutOfMoves) {
+      return false;
+    }
+
+    final int tubeCount = state.gameState.tubes.length;
+    if (fromIndex < 0 ||
+        fromIndex >= tubeCount ||
+        toIndex < 0 ||
+        toIndex >= tubeCount ||
+        fromIndex == toIndex) {
+      return false;
+    }
+
+    final GameEngine engine = ref.read(gameEngineProvider);
+    if (!engine.isValidMove(state.gameState, fromIndex, toIndex)) {
+      return false;
+    }
+
+    final GameState newState = engine.executeMove(
+      state.gameState,
+      fromIndex,
+      toIndex,
+    );
+    state = state.copyWith(
+      gameState: newState,
+      clearSelection: true,
+      clearError: true,
+    );
+    ref.read(gameAudioServiceProvider).playBallMove();
+    return true;
   }
 
   /// Clears any active tube selection.

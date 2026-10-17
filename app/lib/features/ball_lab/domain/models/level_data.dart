@@ -10,8 +10,60 @@ class LevelData {
     required this.levelId,
     required List<Tube> initialTubes,
     this.parMoves,
-  }) : initialTubes = List<Tube>.unmodifiable(initialTubes) {
+    this.minMoves,
+    int? maxMoves,
+    int? threeStarMoves,
+    int? twoStarMoves,
+    this.isMilestone = false,
+  }) : maxMoves = _resolveMaxMoves(maxMoves, parMoves),
+       threeStarMoves = _resolveThreeStar(
+         threeStarMoves,
+         parMoves,
+         minMoves,
+         maxMoves,
+       ),
+       twoStarMoves = _resolveTwoStar(
+         twoStarMoves,
+         threeStarMoves,
+         parMoves,
+         minMoves,
+         maxMoves,
+       ),
+       initialTubes = List<Tube>.unmodifiable(initialTubes) {
     validate(this);
+  }
+
+  static int _resolveMaxMoves(int? maxMoves, int? parMoves) {
+    return maxMoves ?? (parMoves != null ? parMoves + 6 : 20);
+  }
+
+  static int _resolveThreeStar(
+    int? three,
+    int? par,
+    int? min,
+    int? max,
+  ) {
+    final int resolvedMax = _resolveMaxMoves(max, par);
+    final int base = three ?? par ?? min ?? 10;
+    return base.clamp(1, resolvedMax);
+  }
+
+  static int _resolveTwoStar(
+    int? two,
+    int? three,
+    int? par,
+    int? min,
+    int? max,
+  ) {
+    final int resolvedMax = _resolveMaxMoves(max, par);
+    final int resolvedThree = _resolveThreeStar(three, par, min, max);
+    if (two != null) return two;
+    if (resolvedMax <= resolvedThree) return resolvedThree;
+    final int buffer = (resolvedMax - resolvedThree) ~/ 2;
+    return (resolvedThree + (buffer > 0 ? buffer : 1)).clamp(
+      resolvedThree,
+      resolvedMax,
+    );
   }
 
   /// Level identifier (must be positive).
@@ -22,6 +74,31 @@ class LevelData {
 
   /// Optional target move count for achieving a 3-star rating.
   final int? parMoves;
+
+  /// Mathematically verified minimum moves required to solve this level.
+  final int? minMoves;
+
+  /// Maximum allowed moves before the player runs out of moves.
+  final int maxMoves;
+
+  /// Maximum moves allowed to earn a 3-star rating (movesUsed <= threeStarMoves).
+  final int threeStarMoves;
+
+  /// Maximum moves allowed to earn a 2-star rating (movesUsed <= twoStarMoves).
+  final int twoStarMoves;
+
+  /// Whether this level represents a highlighted milestone/boss challenge.
+  final bool isMilestone;
+
+  /// Evaluates star rating (1 to 3 stars) based on moves taken upon level victory.
+  /// Returns 0 if movesUsed exceeds [maxMoves].
+  int calculateStars(int movesUsed) {
+    if (movesUsed <= 0) return 0;
+    if (movesUsed <= threeStarMoves) return 3;
+    if (movesUsed <= twoStarMoves) return 2;
+    if (movesUsed <= maxMoves) return 1;
+    return 0;
+  }
 
   /// Returns the set of distinct ball colors used in this level.
   Set<BallColor> get distinctColors {
@@ -49,6 +126,47 @@ class LevelData {
         level.parMoves,
         'parMoves',
         'parMoves must be positive if supplied.',
+      );
+    }
+    if (level.minMoves != null && level.minMoves! <= 0) {
+      throw ArgumentError.value(
+        level.minMoves,
+        'minMoves',
+        'minMoves must be positive if supplied.',
+      );
+    }
+    if (level.maxMoves <= 0) {
+      throw ArgumentError.value(
+        level.maxMoves,
+        'maxMoves',
+        'maxMoves must be positive.',
+      );
+    }
+    if (level.minMoves != null && level.minMoves! > level.maxMoves) {
+      throw ArgumentError(
+        'minMoves (${level.minMoves}) cannot exceed maxMoves (${level.maxMoves}).',
+      );
+    }
+    if (level.threeStarMoves <= 0) {
+      throw ArgumentError.value(
+        level.threeStarMoves,
+        'threeStarMoves',
+        'threeStarMoves must be positive.',
+      );
+    }
+    if (level.twoStarMoves < level.threeStarMoves) {
+      throw ArgumentError(
+        'twoStarMoves (${level.twoStarMoves}) must be >= threeStarMoves (${level.threeStarMoves}).',
+      );
+    }
+    if (level.twoStarMoves > level.maxMoves) {
+      throw ArgumentError(
+        'twoStarMoves (${level.twoStarMoves}) cannot exceed maxMoves (${level.maxMoves}).',
+      );
+    }
+    if (level.minMoves != null && level.threeStarMoves < level.minMoves!) {
+      throw ArgumentError(
+        'threeStarMoves (${level.threeStarMoves}) cannot be less than verified minMoves (${level.minMoves}).',
       );
     }
 
@@ -96,6 +214,11 @@ class LevelData {
     if (other is! LevelData) return false;
     if (levelId != other.levelId ||
         parMoves != other.parMoves ||
+        minMoves != other.minMoves ||
+        maxMoves != other.maxMoves ||
+        threeStarMoves != other.threeStarMoves ||
+        twoStarMoves != other.twoStarMoves ||
+        isMilestone != other.isMilestone ||
         initialTubes.length != other.initialTubes.length) {
       return false;
     }
@@ -107,10 +230,19 @@ class LevelData {
 
   @override
   int get hashCode {
-    return Object.hash(levelId, parMoves, Object.hashAll(initialTubes));
+    return Object.hash(
+      levelId,
+      parMoves,
+      minMoves,
+      maxMoves,
+      threeStarMoves,
+      twoStarMoves,
+      isMilestone,
+      Object.hashAll(initialTubes),
+    );
   }
 
   @override
   String toString() =>
-      'LevelData(level: $levelId, tubes: ${initialTubes.length}, par: $parMoves)';
+      'LevelData(level: $levelId, tubes: ${initialTubes.length}, min: $minMoves, max: $maxMoves, 3★: <=$threeStarMoves, 2★: <=$twoStarMoves, milestone: $isMilestone)';
 }

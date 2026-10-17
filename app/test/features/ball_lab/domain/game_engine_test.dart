@@ -408,5 +408,61 @@ void main() {
         expect(level.initialTubes.length, greaterThanOrEqualTo(5));
       }
     });
+
+    test('23. findHintMove recommends consolidation move when available', () {
+      final GameState state = createTestState(
+        tubes: <Tube>[
+          Tube(balls: const <BallColor>[green, red]),
+          Tube(balls: const <BallColor>[blue, red]),
+          Tube(balls: const <BallColor>[]),
+        ],
+      );
+
+      final PuzzleMove? hint = engine.findHintMove(state);
+      expect(hint, isNotNull);
+      expect(hint!.movedColor, equals(red));
+      // Either 0 -> 1 or 1 -> 0
+      expect((hint.fromIndex == 0 && hint.toIndex == 1) ||
+             (hint.fromIndex == 1 && hint.toIndex == 0), isTrue);
+    });
+
+    test('24. findHintMove recommends moving mixed tube ball to empty tube', () {
+      final GameState state = createTestState(
+        tubes: <Tube>[
+          Tube(balls: const <BallColor>[green, red]),
+          Tube(balls: const <BallColor>[blue, blue]),
+          Tube(balls: const <BallColor>[]),
+        ],
+      );
+
+      final PuzzleMove? hint = engine.findHintMove(state);
+      expect(hint, isNotNull);
+      expect(hint!.fromIndex, equals(0));
+      expect(hint.toIndex, equals(2));
+      expect(hint.movedColor, equals(red));
+    });
+
+    test('25. findHintMove returns null on completed game', () {
+      final GameState state = createTestState(
+        tubes: <Tube>[
+          Tube(balls: const <BallColor>[red, red, red, red]),
+          Tube(balls: const <BallColor>[]),
+        ],
+        isCompleted: true,
+      );
+
+      final PuzzleMove? hint = engine.findHintMove(state);
+      expect(hint, isNull);
+    });
+
+    test('26. BallColor displayName returns human-readable labels', () {
+      expect(BallColor.crimsonRed.displayName, equals('Red'));
+      expect(BallColor.cobaltBlue.displayName, equals('Blue'));
+      expect(BallColor.emeraldGreen.displayName, equals('Green'));
+      expect(BallColor.amberYellow.displayName, equals('Yellow'));
+      expect(BallColor.amethystPurple.displayName, equals('Purple'));
+      expect(BallColor.cyanGlow.displayName, equals('Cyan'));
+      expect(BallColor.neonOrange.displayName, equals('Orange'));
+    });
   });
 }

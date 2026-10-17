@@ -3,8 +3,8 @@ description: Workspace root. The app lives in app/ and shared packages in packag
 publish_to: none
 
 environment:
-  sdk: ^3.13.0
-  flutter: ">=3.47.4"
+  sdk: ^3.4.0
+  flutter: ">=3.22.0"
 
 workspace:
   - app

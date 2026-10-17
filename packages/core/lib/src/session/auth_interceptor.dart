@@ -66,12 +66,16 @@ class UnauthorizedAfterRefreshException implements Exception {
 /// `createDio` attaches it.
 class AuthInterceptor extends Interceptor {
   AuthInterceptor({
-    required this._session,
-    this._refreshHook,
-    this._onRefreshed,
-    this._onExpired,
-    this._reporter = const NoopErrorReporter(),
-  });
+    required Session? Function() session,
+    RefreshHook? Function()? refreshHook,
+    Future<void> Function(Session session)? onRefreshed,
+    Future<void> Function()? onExpired,
+    ErrorReporter reporter = const NoopErrorReporter(),
+  })  : _session = session,
+        _refreshHook = refreshHook,
+        _onRefreshed = onRefreshed,
+        _onExpired = onExpired,
+        _reporter = reporter;
 
   static final Logger _log = Logger('session');
 

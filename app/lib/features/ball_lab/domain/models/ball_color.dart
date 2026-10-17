@@ -15,6 +15,26 @@ enum BallColor {
   /// Stable machine-readable identifier for serialization and testing.
   final String id;
 
+  /// Human-readable label for user-facing hints, logs, and accessibility.
+  String get displayName {
+    switch (this) {
+      case BallColor.crimsonRed:
+        return 'Red';
+      case BallColor.cobaltBlue:
+        return 'Blue';
+      case BallColor.emeraldGreen:
+        return 'Green';
+      case BallColor.amberYellow:
+        return 'Yellow';
+      case BallColor.amethystPurple:
+        return 'Purple';
+      case BallColor.cyanGlow:
+        return 'Cyan';
+      case BallColor.neonOrange:
+        return 'Orange';
+    }
+  }
+
   /// Resolves a [BallColor] from its stable [id], or `null` if unrecognised.
   static BallColor? fromId(String id) {
     for (final BallColor color in values) {

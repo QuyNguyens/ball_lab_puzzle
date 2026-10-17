@@ -13,6 +13,7 @@ import 'widgets/component_rules_demo.dart';
 import 'widgets/header.dart';
 import 'widgets/language_tile.dart';
 import 'widgets/social_tile_widget.dart';
+import 'widgets/sound_tile.dart';
 import 'widgets/theme_widget.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -38,8 +39,27 @@ class HomeScreen extends ConsumerWidget {
         children: <Widget>[
           Header(text: AppLocalizations.of(context).homeIntro),
           const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                icon: const Icon(Icons.science_outlined),
+                label: const Text(
+                  'PLAY BALL LAB PUZZLE',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: const Color(0xFF6366F1),
+                ),
+                onPressed: () => context.push(SGRoute.game.route),
+              ),
+            ),
+          ),
           const ThemeWidget(),
           const LanguageTile(),
+          const SoundTile(),
           const _PermissionDemoLinks(),
           const ComponentRulesDemo(),
           ListView.separated(

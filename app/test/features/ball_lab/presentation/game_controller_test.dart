@@ -50,12 +50,12 @@ void main() {
       final ProviderContainer container = createContainer();
       final bool success = container
           .read(gameControllerProvider.notifier)
-          .loadLevel(999);
+          .loadLevel(1000);
       expect(success, isFalse);
 
       final GamePlayState state = container.read(gameControllerProvider);
       expect(state.currentLevel.levelId, equals(1));
-      expect(state.errorMessage, contains('999'));
+      expect(state.errorMessage, contains('1000'));
       expect(state.selectedTubeIndex, isNull);
     });
   });
@@ -190,6 +190,194 @@ void main() {
         isNull,
       );
     });
+
+    test('moveBall directly transfers ball and updates state for drag & drop', () {
+      final ProviderContainer container = createContainer();
+      final bool success = container
+          .read(gameControllerProvider.notifier)
+          .moveBall(0, 3);
+      expect(success, isTrue);
+
+      final GamePlayState state = container.read(gameControllerProvider);
+      expect(state.gameState.moveCount, equals(1));
+      expect(state.gameState.tubes[3].balls.length, equals(1));
+      expect(state.gameState.tubes[3].balls.last, equals(blue));
+      expect(state.selectedTubeIndex, isNull);
+    });
+
+    test('moveBall rejects invalid moves safely', () {
+      final ProviderContainer container = createContainer();
+      expect(
+        container.read(gameControllerProvider.notifier).moveBall(0, 0),
+        isFalse,
+      );
+      expect(
+        container.read(gameControllerProvider.notifier).moveBall(3, 0),
+        isFalse,
+      );
+      expect(
+        container.read(gameControllerProvider.notifier).moveBall(-1, 0),
+        isFalse,
+      );
+      expect(
+        container.read(gameControllerProvider).gameState.moveCount,
+        equals(0),
+      );
+    });
+  });
+
+  group('GameController - Move Limits & Game Over Handling', () {
+    test('1. Level initializes with exact maxMoves and movesLeft', () {
+      final ProviderContainer container = createContainer();
+      final GamePlayState state = container.read(gameControllerProvider);
+
+      expect(state.currentLevel.maxMoves, equals(18));
+      expect(state.gameState.maxMoves, equals(18));
+      expect(state.gameState.moveCount, equals(0));
+      expect(state.gameState.movesLeft, equals(18));
+      expect(state.gameState.isOutOfMoves, isFalse);
+    });
+
+    test('2. Valid move decrements movesLeft by exactly one', () {
+      final ProviderContainer container = createContainer();
+      container.read(gameControllerProvider.notifier).moveBall(0, 3);
+      final GamePlayState state = container.read(gameControllerProvider);
+
+      expect(state.gameState.moveCount, equals(1));
+      expect(state.gameState.movesLeft, equals(17));
+      expect(state.gameState.isOutOfMoves, isFalse);
+    });
+
+    test('3. Invalid move does not decrement movesLeft', () {
+      final ProviderContainer container = createContainer();
+      container.read(gameControllerProvider.notifier).moveBall(0, 1); // Invalid color mismatch
+      final GamePlayState state = container.read(gameControllerProvider);
+
+      expect(state.gameState.moveCount, equals(0));
+      expect(state.gameState.movesLeft, equals(18));
+    });
+
+    test('4. Undo restores movesLeft correctly', () {
+      final ProviderContainer container = createContainer();
+      final GameController controller = container.read(gameControllerProvider.notifier)
+        ..moveBall(0, 3);
+      expect(container.read(gameControllerProvider).gameState.movesLeft, equals(17));
+
+      controller.undo();
+      expect(container.read(gameControllerProvider).gameState.movesLeft, equals(18));
+      expect(container.read(gameControllerProvider).gameState.moveCount, equals(0));
+    });
+
+    test('5. Restart restores movesLeft and board configuration to initial state', () {
+      final ProviderContainer container = createContainer();
+      container.read(gameControllerProvider.notifier)
+        ..moveBall(0, 3)
+        ..restart();
+
+      final GamePlayState state = container.read(gameControllerProvider);
+      expect(state.gameState.moveCount, equals(0));
+      expect(state.gameState.movesLeft, equals(18));
+      expect(state.gameState.tubes[3].isEmpty, isTrue);
+    });
+
+    test('6. When moves run out without winning, isOutOfMoves is true and moves are blocked', () {
+      // Mock level with maxMoves: 1
+      final LevelData oneMoveFailLevel = LevelData(
+        levelId: 88,
+        minMoves: 1,
+        maxMoves: 1,
+        initialTubes: <Tube>[
+          Tube(balls: const <BallColor>[
+            BallColor.crimsonRed,
+            BallColor.cobaltBlue,
+            BallColor.crimsonRed,
+            BallColor.cobaltBlue,
+          ]),
+          Tube(balls: const <BallColor>[
+            BallColor.cobaltBlue,
+            BallColor.crimsonRed,
+            BallColor.cobaltBlue,
+            BallColor.crimsonRed,
+          ]),
+          Tube(balls: const <BallColor>[]),
+          Tube(balls: const <BallColor>[]),
+        ],
+      );
+
+      final _CustomLevelService mockService = _CustomLevelService(oneMoveFailLevel);
+      final ProviderContainer container = createContainer(
+        overrides: <Override>[
+          levelProviderServiceProvider.overrideWithValue(mockService),
+        ],
+      );
+
+      final GameController controller = container.read(gameControllerProvider.notifier);
+      expect(container.read(gameControllerProvider).gameState.movesLeft, equals(1));
+
+      // Execute 1 move (not completing the puzzle)
+      final bool move1 = controller.moveBall(0, 2);
+      expect(move1, isTrue);
+
+      final GamePlayState stateAfterMove1 = container.read(gameControllerProvider);
+      expect(stateAfterMove1.gameState.moveCount, equals(1));
+      expect(stateAfterMove1.gameState.movesLeft, equals(0));
+      expect(stateAfterMove1.gameState.isCompleted, isFalse);
+      expect(stateAfterMove1.gameState.isOutOfMoves, isTrue);
+
+      // Attempting any further move must be blocked
+      final bool move2 = controller.moveBall(1, 3);
+      expect(move2, isFalse);
+      expect(container.read(gameControllerProvider).gameState.moveCount, equals(1));
+    });
+
+    test('7. Winning on the exact last move is counted as victory, NOT defeat', () {
+      // Mock level with maxMoves: 1, solvable in 1 move
+      final LevelData oneMoveWinLevel = LevelData(
+        levelId: 77,
+        maxMoves: 1,
+        initialTubes: <Tube>[
+          Tube(balls: const <BallColor>[BallColor.crimsonRed, BallColor.crimsonRed, BallColor.crimsonRed]),
+          Tube(balls: const <BallColor>[BallColor.cobaltBlue, BallColor.cobaltBlue, BallColor.cobaltBlue, BallColor.cobaltBlue]),
+          Tube(balls: const <BallColor>[BallColor.crimsonRed]),
+          Tube(balls: const <BallColor>[]),
+        ],
+      );
+
+      final _CustomLevelService mockService = _CustomLevelService(oneMoveWinLevel);
+      final ProviderContainer container = createContainer(
+        overrides: <Override>[
+          levelProviderServiceProvider.overrideWithValue(mockService),
+        ],
+      );
+
+      final GameController controller = container.read(gameControllerProvider.notifier);
+
+      // Final move that completes the puzzle
+      final bool winMove = controller.moveBall(2, 0);
+      expect(winMove, isTrue);
+
+      final GamePlayState finalState = container.read(gameControllerProvider);
+      expect(finalState.gameState.moveCount, equals(1));
+      expect(finalState.gameState.movesLeft, equals(0));
+      expect(finalState.gameState.isCompleted, isTrue);
+      expect(finalState.gameState.isOutOfMoves, isFalse, reason: 'Win on last move must not be outOfMoves');
+    });
+
+    test('8. Switching levels resets state to the target level fixed configuration and maxMoves', () {
+      final ProviderContainer container = createContainer();
+      final GameController controller = container.read(gameControllerProvider.notifier)
+        ..moveBall(0, 3);
+      expect(container.read(gameControllerProvider).gameState.movesLeft, equals(17));
+
+      controller.loadLevel(2);
+      final GamePlayState level2State = container.read(gameControllerProvider);
+
+      expect(level2State.currentLevel.levelId, equals(2));
+      expect(level2State.gameState.levelId, equals(2));
+      expect(level2State.gameState.moveCount, equals(0));
+      expect(level2State.gameState.maxMoves, equals(16));
+      expect(level2State.gameState.movesLeft, equals(16));
+    });
   });
 }
 
@@ -211,4 +399,19 @@ class _SingleLevelService extends LevelProviderService {
 
   @override
   LevelData? getLevel(int id) => _oneMoveLevel;
+}
+
+class _CustomLevelService extends LevelProviderService {
+  const _CustomLevelService(this.level);
+
+  final LevelData level;
+
+  @override
+  List<LevelData> getLevels() => <LevelData>[level];
+
+  @override
+  LevelData? getLevel(int id) => level;
+
+  @override
+  bool hasLevel(int id) => id == level.levelId;
 }

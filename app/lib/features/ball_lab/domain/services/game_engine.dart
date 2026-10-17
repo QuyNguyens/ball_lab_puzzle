@@ -8,6 +8,7 @@ import '../models/tube.dart';
 enum MoveValidationResult {
   valid,
   gameCompleted,
+  outOfMoves,
   invalidIndex,
   sameTube,
   sourceEmpty,
@@ -34,6 +35,10 @@ class GameEngine {
   ) {
     if (state.isCompleted) {
       return MoveValidationResult.gameCompleted;
+    }
+
+    if (state.isOutOfMoves) {
+      return MoveValidationResult.outOfMoves;
     }
 
     final int tubeCount = state.tubes.length;
@@ -118,6 +123,7 @@ class GameEngine {
       history: newHistory,
       moveCount: newMoveCount,
       isCompleted: isWon,
+      maxMoves: state.maxMoves,
     );
   }
 
@@ -163,6 +169,7 @@ class GameEngine {
       history: newHistory,
       moveCount: newMoveCount,
       isCompleted: isWon,
+      maxMoves: state.maxMoves,
     );
   }
 
@@ -186,7 +193,80 @@ class GameEngine {
       history: const <PuzzleMove>[],
       moveCount: 0,
       isCompleted: checkWinCondition(level.initialTubes),
+      maxMoves: level.maxMoves,
     );
+  }
+
+  /// Finds a recommended hint move for the current puzzle state.
+  ///
+  /// Returns a valid [PuzzleMove] recommendation, or `null` if no productive
+  /// move can be determined (e.g. puzzle is solved or no valid moves exist).
+  PuzzleMove? findHintMove(GameState state) {
+    if (state.isCompleted) return null;
+
+    // 1. Prioritize consolidation moves:
+    // Move a ball to another tube that already has the same top color.
+    for (int i = 0; i < state.tubes.length; i++) {
+      final Tube source = state.tubes[i];
+      if (source.isEmpty || source.isSolved) continue;
+
+      for (int j = 0; j < state.tubes.length; j++) {
+        if (i == j) continue;
+        final Tube dest = state.tubes[j];
+        if (dest.isEmpty || dest.isFull || dest.isSolved) continue;
+        if (dest.topBall == source.topBall && isValidMove(state, i, j)) {
+          return PuzzleMove(
+            fromIndex: i,
+            toIndex: j,
+            movedColor: source.topBall!,
+          );
+        }
+      }
+    }
+
+    // 2. Clear to an empty tube from a mixed-color source tube:
+    // Only move if the source contains more than one color, to avoid wasteful moves.
+    for (int i = 0; i < state.tubes.length; i++) {
+      final Tube source = state.tubes[i];
+      if (source.isEmpty || source.isSolved) continue;
+
+      final bool isMonoColor = source.balls.every(
+        (BallColor c) => c == source.balls.first,
+      );
+      if (isMonoColor) continue;
+
+      for (int j = 0; j < state.tubes.length; j++) {
+        if (i == j) continue;
+        final Tube dest = state.tubes[j];
+        if (dest.isEmpty && isValidMove(state, i, j)) {
+          return PuzzleMove(
+            fromIndex: i,
+            toIndex: j,
+            movedColor: source.topBall!,
+          );
+        }
+      }
+    }
+
+    // 3. Fallback: Any valid non-reversing move.
+    for (int i = 0; i < state.tubes.length; i++) {
+      for (int j = 0; j < state.tubes.length; j++) {
+        if (i == j) continue;
+        if (isValidMove(state, i, j)) {
+          if (state.history.isNotEmpty) {
+            final PuzzleMove last = state.history.last;
+            if (last.fromIndex == j && last.toIndex == i) continue;
+          }
+          return PuzzleMove(
+            fromIndex: i,
+            toIndex: j,
+            movedColor: state.tubes[i].topBall!,
+          );
+        }
+      }
+    }
+
+    return null;
   }
 
   /// Validates that a [LevelData] instance conforms to all game invariants.
