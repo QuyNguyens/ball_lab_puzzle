@@ -11,7 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 class MockTimeService implements TimeService {
   MockTimeService({DateTime? initialUtc})
-      : _currentUtc = initialUtc ?? DateTime.utc(2026, 10, 16, 5); // 12:00 in UTC+7
+      : _currentUtc =
+            initialUtc ?? DateTime.utc(2026, 10, 16, 5); // 12:00 in UTC+7
 
   DateTime _currentUtc;
 
@@ -46,7 +47,10 @@ class MockTimeService implements TimeService {
 }
 
 void main() {
-  group('Ball Lab Economy & Daily Quota Specification Tests (16 Scenarios)', () {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  group('Ball Lab Economy & Daily Quota Specification Tests (16 Scenarios)',
+      () {
     late InMemoryEconomyRepository repository;
     late MockTimeService timeService;
     late ProviderContainer container;
@@ -66,13 +70,14 @@ void main() {
       container.dispose();
     });
 
-    // 1. Người chơi mới có 5 lượt chơi, 3 lượt Undo và 2 lượt Hint.
-    test('1. New player initializes with exactly 5 lives, 3 undos, and 2 hints', () {
+    // 1. Người chơi mới có 3 lượt chơi, 3 lượt Undo và 2 lượt Hint.
+    test('1. New player initializes with exactly 3 lives, 3 undos, and 2 hints',
+        () {
       final GameEconomy economy = container.read(economyControllerProvider);
 
-      expect(economy.dailyLives, equals(5));
+      expect(economy.dailyLives, equals(3));
       expect(economy.bonusLives, equals(0));
-      expect(economy.totalLives, equals(5));
+      expect(economy.totalLives, equals(3));
       expect(economy.undoCount, equals(3));
       expect(economy.hintCount, equals(2));
       expect(economy.canPlay, isTrue);
@@ -82,14 +87,15 @@ void main() {
 
     // 2. Thua một ván chỉ trừ đúng một lượt.
     test('2. Game defeat deducts exactly 1 life', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       final bool consumed = await controller.consumeLifeOnDefeat();
       expect(consumed, isTrue);
 
       final GameEconomy state = container.read(economyControllerProvider);
-      expect(state.dailyLives, equals(4));
-      expect(state.totalLives, equals(4));
+      expect(state.dailyLives, equals(2));
+      expect(state.totalLives, equals(2));
     });
 
     // 3. Thắng không bị trừ lượt.
@@ -100,16 +106,22 @@ void main() {
       final GameEconomy afterWin = container.read(economyControllerProvider);
 
       expect(afterWin.totalLives, equals(initial.totalLives));
-      expect(afterWin.dailyLives, equals(5));
+      expect(afterWin.dailyLives, equals(3));
     });
 
     // 4. Thoát game giữa ván không tự động bị trừ lượt (active session persisted).
-    test('4. Exiting mid-game does not penalize the player and persists active session', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test(
+        '4. Exiting mid-game does not penalize the player and persists active session',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
       final ActiveGameSession session = ActiveGameSession(
         levelId: 3,
         tubes: <Tube>[
-          Tube(balls: const <BallColor>[BallColor.crimsonRed, BallColor.crimsonRed]),
+          Tube(balls: const <BallColor>[
+            BallColor.crimsonRed,
+            BallColor.crimsonRed
+          ]),
           Tube(balls: const <BallColor>[BallColor.amberYellow]),
         ],
         moveCount: 4,
@@ -121,7 +133,7 @@ void main() {
 
       // Verify lives were NOT deducted
       final GameEconomy current = container.read(economyControllerProvider);
-      expect(current.totalLives, equals(5));
+      expect(current.totalLives, equals(3));
 
       // Verify session can be retrieved upon app reopen
       final ActiveGameSession? retrieved = controller.getActiveSession();
@@ -133,15 +145,18 @@ void main() {
     });
 
     // 5. Mở lại ứng dụng không khôi phục tài nguyên đã sử dụng trong ngày.
-    test('5. Reopening the app on the same day does not restore consumed resources', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test(
+        '5. Reopening the app on the same day does not restore consumed resources',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       // Consume resources
-      await controller.consumeLifeOnDefeat(); // 4 lives left
-      await controller.consumeUndo();         // 2 undos left
-      await controller.consumeHint();         // 1 hint left
+      await controller.consumeLifeOnDefeat(); // 2 lives left
+      await controller.consumeUndo(); // 2 undos left
+      await controller.consumeHint(); // 1 hint left
 
-      expect(container.read(economyControllerProvider).totalLives, equals(4));
+      expect(container.read(economyControllerProvider).totalLives, equals(2));
       expect(container.read(economyControllerProvider).undoCount, equals(2));
       expect(container.read(economyControllerProvider).hintCount, equals(1));
 
@@ -154,7 +169,7 @@ void main() {
       );
 
       final GameEconomy reloaded = newContainer.read(economyControllerProvider);
-      expect(reloaded.totalLives, equals(4));
+      expect(reloaded.totalLives, equals(2));
       expect(reloaded.undoCount, equals(2));
       expect(reloaded.hintCount, equals(1));
 
@@ -162,8 +177,11 @@ void main() {
     });
 
     // 6. Ngày mới phục hồi hạn mức miễn phí chính xác.
-    test('6. New calendar day in Asia/Ho_Chi_Minh restores daily quotas to 5 lives, 3 undos, 2 hints', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test(
+        '6. New calendar day in Asia/Ho_Chi_Minh restores daily quotas to 3 lives, 3 undos, 2 hints',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       // Deplete some resources on Day 1
       await controller.consumeLifeOnDefeat();
@@ -171,7 +189,7 @@ void main() {
       await controller.consumeUndo();
       await controller.consumeHint();
 
-      expect(container.read(economyControllerProvider).dailyLives, equals(3));
+      expect(container.read(economyControllerProvider).dailyLives, equals(1));
       expect(container.read(economyControllerProvider).undoCount, equals(2));
       expect(container.read(economyControllerProvider).hintCount, equals(1));
 
@@ -186,18 +204,23 @@ void main() {
         ],
       );
 
-      final GameEconomy refreshed = day2Container.read(economyControllerProvider);
-      expect(refreshed.dailyLives, equals(5));
+      final GameEconomy refreshed =
+          day2Container.read(economyControllerProvider);
+      expect(refreshed.dailyLives, equals(3));
       expect(refreshed.undoCount, equals(3));
       expect(refreshed.hintCount, equals(2));
-      expect(refreshed.lastDailyRefreshDate, equals(timeService.getVietnamDateString()));
+      expect(refreshed.lastDailyRefreshDate,
+          equals(timeService.getVietnamDateString()));
 
       day2Container.dispose();
     });
 
     // 7. Thay đổi trạng thái game hoặc animation không làm trừ lượt lặp.
-    test('7. Multiple repeated defeat triggers are idempotent and only deduct 1 life', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test(
+        '7. Multiple repeated defeat triggers are idempotent and only deduct 1 life',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       // In BallLabScreen, _hasDeductedLifeForDefeat guards repeated triggers
       bool hasDeducted = false;
@@ -215,12 +238,13 @@ void main() {
       }
 
       final GameEconomy state = container.read(economyControllerProvider);
-      expect(state.totalLives, equals(4)); // Only 1 deducted!
+      expect(state.totalLives, equals(2)); // Only 1 deducted from 3!
     });
 
     // 8. Undo thành công trừ một lượt.
     test('8. Successful undo move consumes exactly 1 undo quota', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       final bool success = await controller.consumeUndo();
       expect(success, isTrue);
@@ -230,8 +254,10 @@ void main() {
     });
 
     // 9. Undo thất bại hoặc không có lịch sử không trừ lượt.
-    test('9. Empty move history prevents undo and does not deduct quota', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test('9. Empty move history prevents undo and does not deduct quota',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       // Simulate: No moves to undo -> Controller does NOT call consumeUndo
       final List<int> history = <int>[];
@@ -245,7 +271,8 @@ void main() {
 
     // 10. Hint thành công trừ một lượt.
     test('10. Valid hint calculation deducts exactly 1 hint quota', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       final bool success = await controller.consumeHint();
       expect(success, isTrue);
@@ -255,8 +282,10 @@ void main() {
     });
 
     // 11. Hint không tìm được gợi ý hợp lệ không trừ lượt.
-    test('11. When no valid hint move exists, no hint quota is deducted', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test('11. When no valid hint move exists, no hint quota is deducted',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       // Simulate: Engine returns null hint
       const String? hint = null;
@@ -269,8 +298,10 @@ void main() {
     });
 
     // 12. Restart level không phục hồi hạn mức Undo/Hint.
-    test('12. Restarting a level retains consumed Undo and Hint counts', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test('12. Restarting a level retains consumed Undo and Hint counts',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       await controller.consumeUndo();
       await controller.consumeHint();
@@ -285,10 +316,11 @@ void main() {
 
     // 13. Hết lượt chơi thì không thể bắt đầu ván mới.
     test('13. Exhausting all lives prevents starting new games', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
-      // Consume all 5 lives
-      for (int i = 0; i < 5; i++) {
+      // Consume all 3 lives
+      for (int i = 0; i < 3; i++) {
         await controller.consumeLifeOnDefeat();
       }
 
@@ -303,10 +335,12 @@ void main() {
     });
 
     // 14. Hết lượt không làm mất quyền xem bản đồ và thành tích.
-    test('14. Having 0 lives does not lock level map or erase achievements', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test('14. Having 0 lives does not lock level map or erase achievements',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 3; i++) {
         await controller.consumeLifeOnDefeat();
       }
 
@@ -318,19 +352,21 @@ void main() {
     });
 
     // 15. Dữ liệu lượt thưởng trong tương lai không bị ghi đè bởi việc phục hồi hạn mức miễn phí.
-    test('15. Bonus lives are preserved across daily midnight quota rollover', () async {
-      final EconomyController controller = container.read(economyControllerProvider.notifier);
+    test('15. Bonus lives are preserved across daily midnight quota rollover',
+        () async {
+      final EconomyController controller =
+          container.read(economyControllerProvider.notifier);
 
       // Player receives 3 bonus lives (e.g. from future Rewarded Ads or IAP)
       await controller.addBonusLives(3);
 
       GameEconomy state = container.read(economyControllerProvider);
-      expect(state.dailyLives, equals(5));
+      expect(state.dailyLives, equals(3));
       expect(state.bonusLives, equals(3));
-      expect(state.totalLives, equals(8));
+      expect(state.totalLives, equals(6));
 
-      // Player loses 6 games: 5 daily lives consumed + 1 bonus life consumed
-      for (int i = 0; i < 6; i++) {
+      // Player loses 4 games: 3 daily lives consumed + 1 bonus life consumed
+      for (int i = 0; i < 4; i++) {
         await controller.consumeLifeOnDefeat();
       }
 
@@ -349,17 +385,20 @@ void main() {
         ],
       );
 
-      final GameEconomy rolledOver = day2Container.read(economyControllerProvider);
-      // Daily quota resets to 5, bonus lives stay at 2 -> Total = 7 lives!
-      expect(rolledOver.dailyLives, equals(5));
+      final GameEconomy rolledOver =
+          day2Container.read(economyControllerProvider);
+      // Daily quota resets to 3, bonus lives stay at 2 -> Total = 5 lives!
+      expect(rolledOver.dailyLives, equals(3));
       expect(rolledOver.bonusLives, equals(2));
-      expect(rolledOver.totalLives, equals(7));
+      expect(rolledOver.totalLives, equals(5));
 
       day2Container.dispose();
     });
 
     // 16. Tất cả dữ liệu vẫn nhất quán sau khi đóng và mở ứng dụng (JSON round-trip & repository persistence).
-    test('16. All economy and session data round-trips cleanly through JSON persistence', () {
+    test(
+        '16. All economy and session data round-trips cleanly through JSON persistence',
+        () {
       const GameEconomy originalEconomy = GameEconomy(
         dailyLives: 2,
         bonusLives: 4,
@@ -381,7 +420,10 @@ void main() {
       final ActiveGameSession originalSession = ActiveGameSession(
         levelId: 4,
         tubes: <Tube>[
-          Tube(balls: const <BallColor>[BallColor.cobaltBlue, BallColor.cobaltBlue]),
+          Tube(balls: const <BallColor>[
+            BallColor.cobaltBlue,
+            BallColor.cobaltBlue
+          ]),
           Tube(balls: const <BallColor>[BallColor.emeraldGreen]),
         ],
         moveCount: 8,
@@ -389,7 +431,8 @@ void main() {
       );
 
       final Map<String, dynamic> sessionJson = originalSession.toJson();
-      final ActiveGameSession restoredSession = ActiveGameSession.fromJson(sessionJson);
+      final ActiveGameSession restoredSession =
+          ActiveGameSession.fromJson(sessionJson);
 
       expect(restoredSession, equals(originalSession));
       expect(restoredSession.levelId, equals(4));

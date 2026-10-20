@@ -134,7 +134,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get outOfLivesMessage =>
-      'You have used all 5 free daily experiment attempts.\nYour lives replenish every midnight (00:00 VN).';
+      'You have used all 3 free daily experiment attempts.\nYour lives replenish every midnight (00:00 VN).';
 
   @override
   String get nextFreeRefillIn => 'NEXT FREE REFILL IN';
@@ -238,127 +238,39 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get authCreateAccount => 'Create an account';
+  String get actionHintAd => 'Hint (+1 Ad)';
 
   @override
-  String get authCredentialsRequired => 'Please enter your email and password.';
+  String get adDailyLimitReachedTag => '3/3 CLAIMED';
 
   @override
-  String get authEmailHint => 'Enter your email';
+  String get adDailyLimitReachedToast =>
+      'You have reached the daily limit of 3 rewarded lives. Please return tomorrow!';
 
   @override
-  String get authEmailInvalid => 'Please enter a valid email address';
+  String get adFailedMessage =>
+      'Ad could not be loaded. Please check your network connection.';
 
   @override
-  String get authEmailRequired => 'Please enter an email address';
+  String get adNotReadyMessage =>
+      'Ad is loading. Please try again in a moment.';
 
   @override
-  String get authLoginButton => 'Login';
+  String get adRewardGrantedToast => 'Hint unlocked from ad!';
 
   @override
-  String get authLoginFailed => 'Wrong email or password.';
+  String get adRewardHintDialogCancel => 'Not Now';
 
   @override
-  String get authLoginSubtitle => 'You can login with your email and password';
+  String get adRewardHintDialogConfirm => 'Watch Ad';
 
   @override
-  String get authLoginTitle => 'Login';
+  String get adRewardHintDialogMessage =>
+      'Watch a short video ad to reveal the next best move.';
 
   @override
-  String get authPasswordHint => 'Enter your password';
+  String get adRewardHintDialogTitle => 'Need a Hint?';
 
   @override
-  String get authPasswordLabel => 'Password';
-
-  @override
-  String get authRegisterButton => 'Register';
-
-  @override
-  String get authRegisterCancel => 'Cancel';
-
-  @override
-  String get authRegisterTitle => 'New Profile';
-
-  @override
-  String get authUsernameHint => 'Enter your username';
-
-  @override
-  String get authUsernameLabel => 'Username';
-
-  @override
-  String get authWelcome => 'Welcome to the app';
-
-  @override
-  String demoAreaBody(String area) {
-    return 'You can see this page because your permissions include the \"$area\" area.';
-  }
-
-  @override
-  String get demoComponentRulesTitle => 'Component rules';
-
-  @override
-  String get demoDeleteAccountHidden => 'Delete account (hidden)';
-
-  @override
-  String get demoEditProfileDisabled => 'Edit profile (disabled)';
-
-  @override
-  String get demoEmailReadonly => 'Email (read-only)';
-
-  @override
-  String get demoOrdersTitle => 'Orders';
-
-  @override
-  String get demoPermissionsTitle => 'Permission demo';
-
-  @override
-  String get demoProfileTitle => 'Profile';
-
-  @override
-  String get demoReportsTitle => 'Reports';
-
-  @override
-  String get demoSettingsTitle => 'Settings';
-
-  @override
-  String get homeBottomNavFirst => 'Home';
-
-  @override
-  String get homeBottomNavSecond => 'Info';
-
-  @override
-  String get homeInfo => 'Info';
-
-  @override
-  String get homeIntro => 'Hi, I am Eren 👋🏽';
-
-  @override
-  String get homeMenuTitle => 'Menu';
-
-  @override
-  String get homeMore => 'Learn More';
-
-  @override
-  String get homeThemeMode => 'Theme Mode';
-
-  @override
-  String get homeThemeModeDark => 'Dark';
-
-  @override
-  String get homeThemeModeLight => 'Light';
-
-  @override
-  String get homeThemeModeSystem => 'System';
-
-  @override
-  String get homeTitle => 'Home';
-
-  @override
-  String get homeToggleLanguage => 'Change Language';
-
-  @override
-  String get homeToggleTheme => 'Change Theme';
-
-  @override
-  String get soundEffectsLabel => 'Sound Effects';
+  String get adRewardLifeGrantedToast => 'Life replenished (+1 Life)!';
 }

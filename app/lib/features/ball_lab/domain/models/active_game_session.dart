@@ -59,7 +59,9 @@ class ActiveGameSession {
       'levelId': levelId,
       'moveCount': moveCount,
       'maxMoves': maxMoves,
-      'tubes': tubes.map((Tube t) => t.balls.map((BallColor b) => b.name).toList()).toList(),
+      'tubes': tubes
+          .map((Tube t) => t.balls.map((BallColor b) => b.name).toList())
+          .toList(),
     };
   }
 

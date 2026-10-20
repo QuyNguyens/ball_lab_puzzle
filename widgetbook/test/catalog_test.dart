@@ -1,9 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter_riverpod_template/app/l10n.dart';
 import 'package:flutter_riverpod_template/app/theme.dart';
-import 'package:flutter_riverpod_template/features/authentication/presentation/login/login_screen.dart';
-import 'package:flutter_riverpod_template/features/home/presentation/home_screen.dart';
-import 'package:flutter_riverpod_template/features/home/presentation/widgets/component_rules_demo.dart';
 import 'package:flutter_riverpod_template/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
@@ -273,58 +270,8 @@ void main() {
         findsOneWidget,
       );
     });
-
-    testWidgets('login screen: signed out shows an empty form', (
-      WidgetTester tester,
-    ) async {
-      await pumpUseCase(tester, 'LoginScreen/Signed out');
-
-      expect(find.byType(LoginScreen), findsOneWidget);
-      expect(find.text('eve.holt@reqres.in'), findsNothing);
-    });
-
-    testWidgets('login screen: remembered credentials pre-fill the form', (
-      WidgetTester tester,
-    ) async {
-      await pumpUseCase(tester, 'LoginScreen/Remembered credentials');
-
-      expect(find.text('eve.holt@reqres.in'), findsOneWidget);
-    });
-
-    testWidgets('login screen: a failed login shows the error snackbar', (
-      WidgetTester tester,
-    ) async {
-      await pumpUseCase(tester, 'LoginScreen/Login fails');
-
-      await tester.tap(find.widgetWithText(TextButton, 'Login'));
-      await tester.pumpAndSettle();
-
-      expect(
-        find.descendant(
-          of: find.byType(SnackBar),
-          matching: find.text('user not found'),
-        ),
-        findsOneWidget,
-      );
-      expect(find.byType(LoginScreen), findsOneWidget);
-    });
-
-    testWidgets('home screen shows the demo component rules', (
-      WidgetTester tester,
-    ) async {
-      await pumpUseCase(tester, 'HomeScreen/Demo permissions');
-
-      expect(find.byType(HomeScreen), findsOneWidget);
-      expect(find.byType(ComponentRulesDemo), findsOneWidget);
-      // The saved demo permissions apply: email is shown (readonly) and
-      // delete account is hidden.
-      final AppLocalizations l10n = lookupAppLocalizations(
-        const Locale('en'),
-      );
-      expect(find.text(l10n.demoEmailReadonly), findsOneWidget);
-      expect(find.text(l10n.demoDeleteAccountHidden), findsNothing);
-    });
   });
+
 
   testWidgets('the Widgetbook shell opens a use case without an error', (
     WidgetTester tester,

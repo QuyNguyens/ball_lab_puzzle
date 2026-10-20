@@ -9,9 +9,9 @@ class PuzzleMove {
     required this.fromIndex,
     required this.toIndex,
     required this.movedColor,
-  }) : assert(fromIndex >= 0, 'fromIndex must be non-negative'),
-       assert(toIndex >= 0, 'toIndex must be non-negative'),
-       assert(fromIndex != toIndex, 'fromIndex and toIndex must differ');
+  })  : assert(fromIndex >= 0, 'fromIndex must be non-negative'),
+        assert(toIndex >= 0, 'toIndex must be non-negative'),
+        assert(fromIndex != toIndex, 'fromIndex and toIndex must differ');
 
   /// Source tube index.
   final int fromIndex;

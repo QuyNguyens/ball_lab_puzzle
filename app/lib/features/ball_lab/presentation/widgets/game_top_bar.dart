@@ -141,7 +141,7 @@ class GameTopBar extends StatelessWidget {
               children: <Widget>[
                 Icon(
                   isUrgent
-                       ? Icons.warning_amber_rounded
+                      ? Icons.warning_amber_rounded
                       : Icons.hourglass_top_rounded,
                   size: 15,
                   color: isUrgent ? const Color(0xFFFCA5A5) : Colors.white70,

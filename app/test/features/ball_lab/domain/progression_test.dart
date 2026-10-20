@@ -10,7 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('Progression & Star Rating Domain Tests', () {
-    test('1. New player starts with only Level 1 unlocked and 0 total stars', () {
+    test('1. New player starts with only Level 1 unlocked and 0 total stars',
+        () {
       const GameProgression progression = GameProgression();
       expect(progression.unlockedLevelMax, equals(1));
       expect(progression.totalStars, equals(0));
@@ -44,7 +45,8 @@ void main() {
       expect(record1.bestMoves, equals(12));
     });
 
-    test('3. Replaying a level does not downgrade best stars or best moves', () {
+    test('3. Replaying a level does not downgrade best stars or best moves',
+        () {
       GameProgression progression = const GameProgression();
 
       // Run 1: 3 stars in 12 moves
@@ -77,7 +79,9 @@ void main() {
       expect(progression.getRecord(1).bestMoves, equals(10));
     });
 
-    test('4. Total stars is the sum of best stars across all completed levels, not replay sum', () {
+    test(
+        '4. Total stars is the sum of best stars across all completed levels, not replay sum',
+        () {
       GameProgression progression = const GameProgression();
 
       // Complete Level 1 with 2 stars
@@ -113,7 +117,9 @@ void main() {
       expect(progression.totalStars, equals(6));
     });
 
-    test('5. Star rating thresholds calculate properly based on verified level moves', () {
+    test(
+        '5. Star rating thresholds calculate properly based on verified level moves',
+        () {
       const LevelProviderService service = LevelProviderService();
       final LevelData level1 = service.getLevel(1)!;
 
@@ -127,7 +133,8 @@ void main() {
       expect(level1.calculateStars(0), equals(0));
     });
 
-    test('6. Milestone levels (Level 5 and 10) have isMilestone set to true', () {
+    test('6. Milestone levels (Level 5 and 10) have isMilestone set to true',
+        () {
       const LevelProviderService service = LevelProviderService();
       expect(service.getLevel(1)!.isMilestone, isFalse);
       expect(service.getLevel(4)!.isMilestone, isFalse);
@@ -136,10 +143,14 @@ void main() {
       expect(service.getLevel(10)!.isMilestone, isTrue);
     });
 
-    test('7. Progression survives JSON serialization and deserialization intact', () {
+    test(
+        '7. Progression survives JSON serialization and deserialization intact',
+        () {
       GameProgression progression = const GameProgression();
-      progression = progression.recordLevelCompletion(levelId: 1, stars: 3, movesUsed: 12);
-      progression = progression.recordLevelCompletion(levelId: 2, stars: 2, movesUsed: 14);
+      progression = progression.recordLevelCompletion(
+          levelId: 1, stars: 3, movesUsed: 12);
+      progression = progression.recordLevelCompletion(
+          levelId: 2, stars: 2, movesUsed: 14);
 
       final Map<String, dynamic> json = progression.toJson();
       final GameProgression restored = GameProgression.fromJson(json);
@@ -156,7 +167,9 @@ void main() {
       expect(restored.isLevelUnlocked(4), isFalse);
     });
 
-    test('8. ProgressionController updates and saves through ProgressionRepository', () async {
+    test(
+        '8. ProgressionController updates and saves through ProgressionRepository',
+        () async {
       final InMemoryProgressionRepository memoryRepo =
           InMemoryProgressionRepository();
       final ProviderContainer container = ProviderContainer(
@@ -167,21 +180,26 @@ void main() {
 
       final ProgressionController controller =
           container.read(progressionControllerProvider.notifier);
-      expect(container.read(progressionControllerProvider).unlockedLevelMax, equals(1));
+      expect(container.read(progressionControllerProvider).unlockedLevelMax,
+          equals(1));
 
       // Record victory on Level 1
       await controller.recordVictory(levelId: 1, stars: 3, movesUsed: 12);
 
-      expect(container.read(progressionControllerProvider).unlockedLevelMax, equals(2));
-      expect(container.read(progressionControllerProvider).totalStars, equals(3));
+      expect(container.read(progressionControllerProvider).unlockedLevelMax,
+          equals(2));
+      expect(
+          container.read(progressionControllerProvider).totalStars, equals(3));
       // Persisted to repository
       expect(memoryRepo.getProgression().unlockedLevelMax, equals(2));
       expect(memoryRepo.getProgression().totalStars, equals(3));
 
       // Reset
       await controller.resetProgression();
-      expect(container.read(progressionControllerProvider).unlockedLevelMax, equals(1));
-      expect(container.read(progressionControllerProvider).totalStars, equals(0));
+      expect(container.read(progressionControllerProvider).unlockedLevelMax,
+          equals(1));
+      expect(
+          container.read(progressionControllerProvider).totalStars, equals(0));
       expect(memoryRepo.getProgression().totalStars, equals(0));
     });
   });

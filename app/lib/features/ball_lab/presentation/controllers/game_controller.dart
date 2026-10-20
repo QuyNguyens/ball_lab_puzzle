@@ -197,7 +197,8 @@ class GameController extends _$GameController {
   ///
   /// Synchronizes maxMoves with the authoritative level definition to prevent
   /// legacy inflated budgets from persisting across sessions.
-  bool restoreSession(int levelId, List<Tube> tubes, int moveCount, int maxMoves) {
+  bool restoreSession(
+      int levelId, List<Tube> tubes, int moveCount, int maxMoves) {
     final LevelProviderService levelService = ref.read(
       levelProviderServiceProvider,
     );

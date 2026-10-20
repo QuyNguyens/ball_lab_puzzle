@@ -9,9 +9,13 @@ import 'package:flutter_riverpod_template/features/ball_lab/presentation/widgets
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'package:flutter_riverpod_template/app/l10n.dart';
+import 'package:flutter_riverpod_template/l10n/app_localizations.dart';
+
 void main() {
   group('TestTubeWidget - Visual Hint Elements', () {
-    testWidgets('Source tube elevates and bobs the top ball with Transform.translate', (
+    testWidgets(
+        'Source tube elevates and bobs the top ball with Transform.translate', (
       WidgetTester tester,
     ) async {
       final Tube tube = Tube(
@@ -37,9 +41,7 @@ void main() {
 
       // Verify Transform.translate is applied with negative Y offset to bob top ball
       final Finder transformFinder = find.byWidgetPredicate(
-        (Widget w) =>
-            w is Transform &&
-            w.transform.getTranslation().y == -10.0,
+        (Widget w) => w is Transform && w.transform.getTranslation().y == -10.0,
       );
       expect(transformFinder, findsOneWidget);
 
@@ -47,7 +49,9 @@ void main() {
       expect(tube.balls.length, 2);
     });
 
-    testWidgets('Target tube renders preview ghost ball for empty tube in bottom slot', (
+    testWidgets(
+        'Target tube renders preview ghost ball for empty tube in bottom slot',
+        (
       WidgetTester tester,
     ) async {
       final Tube emptyTube = Tube(
@@ -88,7 +92,8 @@ void main() {
       expect(emptyTube.balls.isEmpty, isTrue);
     });
 
-    testWidgets('Target tube renders preview ghost ball on top of existing balls', (
+    testWidgets(
+        'Target tube renders preview ghost ball on top of existing balls', (
       WidgetTester tester,
     ) async {
       final Tube tubeWithBalls = Tube(
@@ -122,12 +127,17 @@ void main() {
   });
 
   group('TubeBoard - Hint Lifecycle & Gestures', () {
-    testWidgets('Board displays activeHint across tubes and dismisses on pointer down', (
+    testWidgets(
+        'Board displays activeHint across tubes and dismisses on pointer down',
+        (
       WidgetTester tester,
     ) async {
       final List<Tube> tubes = <Tube>[
         Tube(
-          balls: const <BallColor>[BallColor.crimsonRed, BallColor.emeraldGreen],
+          balls: const <BallColor>[
+            BallColor.crimsonRed,
+            BallColor.emeraldGreen
+          ],
         ),
         Tube(
           balls: const <BallColor>[BallColor.emeraldGreen],
@@ -164,11 +174,13 @@ void main() {
 
       // Tube 0 should be hint source, Tube 1 should be hint target
       expect(
-        find.byWidgetPredicate((Widget w) => w is TestTubeWidget && w.isHintSource),
+        find.byWidgetPredicate(
+            (Widget w) => w is TestTubeWidget && w.isHintSource),
         findsOneWidget,
       );
       expect(
-        find.byWidgetPredicate((Widget w) => w is TestTubeWidget && w.isHintTarget),
+        find.byWidgetPredicate(
+            (Widget w) => w is TestTubeWidget && w.isHintTarget),
         findsOneWidget,
       );
 
@@ -182,12 +194,15 @@ void main() {
   });
 
   group('BallLabScreen - Visual Hint Full Flow', () {
-    testWidgets('Hint activates visual bounce and preview ball without verbose text', (
+    testWidgets(
+        'Hint activates visual bounce and preview ball without verbose text', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
+            localizationsDelegates: appLocalizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: BallLabScreen(initialLevelId: 1),
           ),
         ),
@@ -195,7 +210,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap hint action button
-      await tester.tap(find.byKey(const ValueKey<String>('action_hint_button')));
+      await tester
+          .tap(find.byKey(const ValueKey<String>('action_hint_button')));
       await tester.pump(const Duration(milliseconds: 100));
 
       // Verify no verbose SnackBar message is shown
@@ -203,11 +219,13 @@ void main() {
 
       // Visual source and target are active on board
       expect(
-        find.byWidgetPredicate((Widget w) => w is TestTubeWidget && w.isHintSource),
+        find.byWidgetPredicate(
+            (Widget w) => w is TestTubeWidget && w.isHintSource),
         findsOneWidget,
       );
       expect(
-        find.byWidgetPredicate((Widget w) => w is TestTubeWidget && w.isHintTarget),
+        find.byWidgetPredicate(
+            (Widget w) => w is TestTubeWidget && w.isHintTarget),
         findsOneWidget,
       );
 
@@ -215,18 +233,21 @@ void main() {
       final Finder targetFinder = find.byWidgetPredicate(
         (Widget w) => w is TestTubeWidget && w.isHintTarget,
       );
-      final TestTubeWidget targetWidget = tester.widget<TestTubeWidget>(targetFinder);
+      final TestTubeWidget targetWidget =
+          tester.widget<TestTubeWidget>(targetFinder);
       expect(targetWidget.previewBallColor, isNotNull);
 
       // After 3 seconds, hint automatically vanishes
       await tester.pump(const Duration(milliseconds: 3100));
 
       expect(
-        find.byWidgetPredicate((Widget w) => w is TestTubeWidget && w.isHintSource),
+        find.byWidgetPredicate(
+            (Widget w) => w is TestTubeWidget && w.isHintSource),
         findsNothing,
       );
       expect(
-        find.byWidgetPredicate((Widget w) => w is TestTubeWidget && w.isHintTarget),
+        find.byWidgetPredicate(
+            (Widget w) => w is TestTubeWidget && w.isHintTarget),
         findsNothing,
       );
     });

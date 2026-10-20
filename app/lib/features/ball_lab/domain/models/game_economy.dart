@@ -13,20 +13,28 @@ class GameEconomy {
     this.hintCount = defaultDailyHints,
     this.lastDailyRefreshDate = '',
     this.lastKnownTimestampMs = 0,
+    this.rewardedLivesToday = 0,
+    this.lastRewardedLivesDate = '',
   });
 
   /// Deserializes a [GameEconomy] snapshot from JSON with defensive clamps and fallbacks.
   factory GameEconomy.fromJson(Map<String, dynamic> json) {
-    final int safeDailyLives = ((json['dailyLives'] as int?) ?? defaultMaxDailyLives)
-        .clamp(0, defaultMaxDailyLives);
-    final int safeBonusLives = ((json['bonusLives'] as int?) ?? 0)
-        .clamp(0, 9999);
-    final int safeUndos = ((json['undoCount'] as int?) ?? defaultDailyUndos)
-        .clamp(0, 9999);
-    final int safeHints = ((json['hintCount'] as int?) ?? defaultDailyHints)
-        .clamp(0, 9999);
+    final int safeDailyLives =
+        ((json['dailyLives'] as int?) ?? defaultMaxDailyLives)
+            .clamp(0, defaultMaxDailyLives);
+    final int safeBonusLives =
+        ((json['bonusLives'] as int?) ?? 0).clamp(0, 9999);
+    final int safeUndos =
+        ((json['undoCount'] as int?) ?? defaultDailyUndos).clamp(0, 9999);
+    final int safeHints =
+        ((json['hintCount'] as int?) ?? defaultDailyHints).clamp(0, 9999);
     final String safeDate = (json['lastDailyRefreshDate'] as String?) ?? '';
     final int safeTimestamp = (json['lastKnownTimestampMs'] as int?) ?? 0;
+    final int safeRewardedLives =
+        ((json['rewardedLivesToday'] as int?) ?? 0)
+            .clamp(0, maxDailyRewardedLives);
+    final String safeRewardedDate =
+        (json['lastRewardedLivesDate'] as String?) ?? '';
 
     return GameEconomy(
       dailyLives: safeDailyLives,
@@ -35,11 +43,16 @@ class GameEconomy {
       hintCount: safeHints,
       lastDailyRefreshDate: safeDate,
       lastKnownTimestampMs: safeTimestamp,
+      rewardedLivesToday: safeRewardedLives,
+      lastRewardedLivesDate: safeRewardedDate,
     );
   }
 
-  /// Initial daily free lives given to the player.
-  static const int defaultMaxDailyLives = 5;
+  /// Initial daily free lives given to the player (max 3 daily lives).
+  static const int defaultMaxDailyLives = 3;
+
+  /// Maximum extra lives that can be earned via Rewarded Ads in a single day.
+  static const int maxDailyRewardedLives = 3;
 
   /// Initial daily free Undos available.
   static const int defaultDailyUndos = 3;
@@ -47,7 +60,7 @@ class GameEconomy {
   /// Initial daily free Hints available.
   static const int defaultDailyHints = 2;
 
-  /// Remaining free lives from the daily quota (0 to 5).
+  /// Remaining free lives from the daily quota (0 to 3).
   final int dailyLives;
 
   /// Additional rewarded or purchased lives that never expire on daily rollover.
@@ -66,6 +79,12 @@ class GameEconomy {
   /// Used for basic clock rollback tampering detection.
   final int lastKnownTimestampMs;
 
+  /// Number of extra lives earned via Rewarded Ads today (0 to 3).
+  final int rewardedLivesToday;
+
+  /// Date string when rewarded lives were earned (`YYYY-MM-DD` in Asia/Ho_Chi_Minh).
+  final String lastRewardedLivesDate;
+
   /// Total playable attempts available (daily free quota + bonus lives).
   int get totalLives => dailyLives + bonusLives;
 
@@ -78,6 +97,9 @@ class GameEconomy {
   /// Whether a Hint action can currently be requested.
   bool get canHint => hintCount > 0;
 
+  /// Whether the player can watch an ad to earn another life today (max 3/day).
+  bool get canWatchAdForLife => rewardedLivesToday < maxDailyRewardedLives;
+
   /// Creates a copy of this state with specified fields replaced.
   GameEconomy copyWith({
     int? dailyLives,
@@ -86,6 +108,8 @@ class GameEconomy {
     int? hintCount,
     String? lastDailyRefreshDate,
     int? lastKnownTimestampMs,
+    int? rewardedLivesToday,
+    String? lastRewardedLivesDate,
   }) {
     return GameEconomy(
       dailyLives: dailyLives ?? this.dailyLives,
@@ -94,6 +118,9 @@ class GameEconomy {
       hintCount: hintCount ?? this.hintCount,
       lastDailyRefreshDate: lastDailyRefreshDate ?? this.lastDailyRefreshDate,
       lastKnownTimestampMs: lastKnownTimestampMs ?? this.lastKnownTimestampMs,
+      rewardedLivesToday: rewardedLivesToday ?? this.rewardedLivesToday,
+      lastRewardedLivesDate:
+          lastRewardedLivesDate ?? this.lastRewardedLivesDate,
     );
   }
 
@@ -145,9 +172,30 @@ class GameEconomy {
     );
   }
 
+  /// Adds rewarded hints earned from Rewarded Ads.
+  GameEconomy addRewardedHints(int count, {int? nowMs}) {
+    if (count <= 0) return this;
+    return copyWith(
+      hintCount: hintCount + count,
+      lastKnownTimestampMs: nowMs ?? lastKnownTimestampMs,
+    );
+  }
+
+  /// Adds exactly 1 life earned via Rewarded Ads, bounded by [maxDailyRewardedLives] (3/day).
+  GameEconomy addRewardedLife({required String todayVn, int? nowMs}) {
+    if (!canWatchAdForLife) return this;
+    return copyWith(
+      bonusLives: bonusLives + 1,
+      rewardedLivesToday: rewardedLivesToday + 1,
+      lastRewardedLivesDate: todayVn,
+      lastKnownTimestampMs: nowMs ?? lastKnownTimestampMs,
+    );
+  }
+
   /// Refreshes daily free quotas for a new day.
   ///
-  /// Restores [dailyLives] to 5, [undoCount] to 3, [hintCount] to 2.
+  /// Restores [dailyLives] to 3, [undoCount] to 3, [hintCount] to 2.
+  /// Resets [rewardedLivesToday] back to 0 for the new calendar day.
   /// Preserves all previously earned/purchased [bonusLives].
   GameEconomy refreshForNewDay(String newDateStr, int nowMs) {
     return copyWith(
@@ -156,6 +204,8 @@ class GameEconomy {
       hintCount: defaultDailyHints,
       lastDailyRefreshDate: newDateStr,
       lastKnownTimestampMs: nowMs,
+      rewardedLivesToday: 0,
+      lastRewardedLivesDate: newDateStr,
     );
   }
 
@@ -168,6 +218,8 @@ class GameEconomy {
       'hintCount': hintCount,
       'lastDailyRefreshDate': lastDailyRefreshDate,
       'lastKnownTimestampMs': lastKnownTimestampMs,
+      'rewardedLivesToday': rewardedLivesToday,
+      'lastRewardedLivesDate': lastRewardedLivesDate,
     };
   }
 
@@ -180,7 +232,9 @@ class GameEconomy {
         other.undoCount == undoCount &&
         other.hintCount == hintCount &&
         other.lastDailyRefreshDate == lastDailyRefreshDate &&
-        other.lastKnownTimestampMs == lastKnownTimestampMs;
+        other.lastKnownTimestampMs == lastKnownTimestampMs &&
+        other.rewardedLivesToday == rewardedLivesToday &&
+        other.lastRewardedLivesDate == lastRewardedLivesDate;
   }
 
   @override
@@ -191,9 +245,11 @@ class GameEconomy {
         hintCount,
         lastDailyRefreshDate,
         lastKnownTimestampMs,
+        rewardedLivesToday,
+        lastRewardedLivesDate,
       );
 
   @override
   String toString() =>
-      'GameEconomy(lives: $totalLives ($dailyLives+$bonusLives), undos: $undoCount, hints: $hintCount, date: $lastDailyRefreshDate)';
+      'GameEconomy(lives: $totalLives ($dailyLives+$bonusLives), undos: $undoCount, hints: $hintCount, rewardedLivesToday: $rewardedLivesToday/3, date: $lastDailyRefreshDate)';
 }

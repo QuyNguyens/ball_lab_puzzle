@@ -13,8 +13,8 @@ class GameState {
     required this.moveCount,
     required this.isCompleted,
     this.maxMoves = 20,
-  }) : tubes = List<Tube>.unmodifiable(tubes),
-       history = List<PuzzleMove>.unmodifiable(history) {
+  })  : tubes = List<Tube>.unmodifiable(tubes),
+        history = List<PuzzleMove>.unmodifiable(history) {
     if (levelId <= 0) {
       throw ArgumentError.value(
         levelId,

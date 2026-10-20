@@ -27,7 +27,8 @@ void main() {
     });
 
     test('rejects unsorted keys', () {
-      expect(arbOrderProblems(<String>['@@locale', 'beta', 'alpha']), isNotEmpty);
+      expect(
+          arbOrderProblems(<String>['@@locale', 'beta', 'alpha']), isNotEmpty);
     });
 
     test('rejects metadata away from its key', () {

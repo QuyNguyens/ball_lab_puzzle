@@ -81,9 +81,8 @@ void main() {
       );
 
       expect(roboto, hasLength(1));
-      final String text = roboto.single.paragraphs
-          .map((LicenseParagraph p) => p.text)
-          .join();
+      final String text =
+          roboto.single.paragraphs.map((LicenseParagraph p) => p.text).join();
       expect(text, contains('The Roboto Project Authors'));
       expect(text, contains('SIL Open Font License'));
     });

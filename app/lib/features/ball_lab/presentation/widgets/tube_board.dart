@@ -51,8 +51,7 @@ class TubeBoard extends StatefulWidget {
   State<TubeBoard> createState() => _TubeBoardState();
 }
 
-class _TubeBoardState extends State<TubeBoard>
-    with TickerProviderStateMixin {
+class _TubeBoardState extends State<TubeBoard> with TickerProviderStateMixin {
   late final AnimationController _flightController;
   late final AnimationController _hintController;
   late final Animation<double> _hintBobAnimation;
@@ -404,8 +403,7 @@ class _TubeBoardState extends State<TubeBoard>
 
     _flightP0 = releaseCenter;
     _flightP3 = sourceSlot;
-    _flightP2 =
-        Offset(sourceSlot.dx, lipY - (_lastComputedBallSize / 2) - 8);
+    _flightP2 = Offset(sourceSlot.dx, lipY - (_lastComputedBallSize / 2) - 8);
     _flightP1 = Offset(
       releaseCenter.dx + (sourceSlot.dx - releaseCenter.dx) * 0.4,
       math.min(releaseCenter.dy, _flightP2.dy) - 24,
@@ -478,9 +476,8 @@ class _TubeBoardState extends State<TubeBoard>
         final bool useTwoRows =
             widget.tubes.length > 4 || availableWidth < 520.0;
 
-        final int firstRowCount = useTwoRows
-            ? ((widget.tubes.length + 1) ~/ 2)
-            : widget.tubes.length;
+        final int firstRowCount =
+            useTwoRows ? ((widget.tubes.length + 1) ~/ 2) : widget.tubes.length;
         final int secondRowCount =
             useTwoRows ? (widget.tubes.length - firstRowCount) : 0;
 
@@ -488,14 +485,15 @@ class _TubeBoardState extends State<TubeBoard>
 
         final double maxAllowedByWidth =
             (availableWidth / (maxTubesInRow + 0.6)) - 16.0;
-        final double maxAllowedByHeight = useTwoRows
-            ? (availableHeight / 11.5)
-            : (availableHeight / 5.8);
+        final double maxAllowedByHeight =
+            useTwoRows ? (availableHeight / 11.5) : (availableHeight / 5.8);
 
-        final double ballSize = math.min(
-          maxAllowedByWidth,
-          maxAllowedByHeight,
-        ).clamp(28.0, 48.0);
+        final double ballSize = math
+            .min(
+              maxAllowedByWidth,
+              maxAllowedByHeight,
+            )
+            .clamp(28.0, 48.0);
 
         _lastComputedBallSize = ballSize;
 
@@ -571,7 +569,9 @@ class _TubeBoardState extends State<TubeBoard>
               tubesLayout,
 
               // Active Dragged Ball Overlay
-              if (_isDragging && _draggedBall != null && _currentDragPos != null)
+              if (_isDragging &&
+                  _draggedBall != null &&
+                  _currentDragPos != null)
                 Positioned(
                   left: _currentDragPos!.dx - (ballSize / 2.0),
                   top: (_currentDragPos!.dy - 18.0) - (ballSize / 2.0),

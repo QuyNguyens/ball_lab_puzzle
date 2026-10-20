@@ -120,7 +120,7 @@
   "movesUsedLabel": "LƯỢT ĐÃ DÙNG",
   "maxLimitLabel": "GIỚI HẠN TỐI ĐA",
   "outOfLivesTitle": "HẾT MẠNG CHƠI",
-  "outOfLivesMessage": "Bạn đã sử dụng hết 5 lượt chơi miễn phí hôm nay.\nSố mạng sẽ hồi phục vào nửa đêm (00:00 VN).",
+  "outOfLivesMessage": "Bạn đã sử dụng hết 3 lượt chơi miễn phí hôm nay.\nSố mạng sẽ hồi phục vào nửa đêm (00:00 VN).",
   "nextFreeRefillIn": "HỒI PHỤC MIỄN PHÍ SAU",
   "watchVideoOption": "Xem video (+1 Mạng)",
   "comingSoonTag": "SẮP RA MẮT",
@@ -220,55 +220,16 @@
       }
     }
   },
-
-  "authCreateAccount": "Tạo tài khoản",
-  "authCredentialsRequired": "Vui lòng nhập email và mật khẩu.",
-  "authEmailHint": "Nhập email của bạn",
-  "authEmailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
-  "authEmailRequired": "Vui lòng nhập địa chỉ email",
-  "authLoginButton": "Đăng nhập",
-  "authLoginFailed": "Sai email hoặc mật khẩu.",
-  "authLoginSubtitle": "Bạn có thể đăng nhập bằng email và mật khẩu",
-  "authLoginTitle": "Đăng nhập",
-  "authPasswordHint": "Nhập mật khẩu của bạn",
-  "authPasswordLabel": "Mật khẩu",
-  "authRegisterButton": "Đăng ký",
-  "authRegisterCancel": "Hủy",
-  "authRegisterTitle": "Hồ sơ mới",
-  "authUsernameHint": "Nhập tên người dùng",
-  "authUsernameLabel": "Tên người dùng",
-  "authWelcome": "Chào mừng đến với ứng dụng",
-  "demoAreaBody": "Bạn có thể xem trang này vì quyền của bạn bao gồm khu vực \"{area}\".",
-  "@demoAreaBody": {
-    "description": "Body of the permission demo screens.",
-    "placeholders": {
-      "area": {
-        "type": "String",
-        "example": "profile"
-      }
-    }
-  },
-  "demoComponentRulesTitle": "Quy tắc thành phần",
-  "demoDeleteAccountHidden": "Xóa tài khoản (ẩn)",
-  "demoEditProfileDisabled": "Sửa hồ sơ (vô hiệu)",
-  "demoEmailReadonly": "Email (chỉ đọc)",
-  "demoOrdersTitle": "Đơn hàng",
-  "demoPermissionsTitle": "Bản demo phân quyền",
-  "demoProfileTitle": "Hồ sơ",
-  "demoReportsTitle": "Báo cáo",
-  "demoSettingsTitle": "Cài đặt",
-  "homeBottomNavFirst": "Trang chủ",
-  "homeBottomNavSecond": "Thông tin",
-  "homeInfo": "Thông tin",
-  "homeIntro": "Xin chào, tôi là Eren 👋🏽",
-  "homeMenuTitle": "Menu",
-  "homeMore": "Tìm hiểu thêm",
-  "homeThemeMode": "Chế độ giao diện",
-  "homeThemeModeDark": "Tối",
-  "homeThemeModeLight": "Sáng",
-  "homeThemeModeSystem": "Hệ thống",
-  "homeTitle": "Trang chủ",
-  "homeToggleLanguage": "Đổi ngôn ngữ",
-  "homeToggleTheme": "Đổi giao diện",
-  "soundEffectsLabel": "Hiệu ứng âm thanh"
+  "actionHintAd": "Gợi ý (+1 QC)",
+  "adDailyLimitReachedTag": "3/3 ĐÃ NHẬN",
+  "adDailyLimitReachedToast": "Bạn đã nhận tối đa 3 mạng thưởng hôm nay. Vui lòng quay lại vào ngày mai!",
+  "adFailedMessage": "Không thể tải quảng cáo. Vui lòng kiểm tra kết nối mạng.",
+  "adNotReadyMessage": "Quảng cáo đang tải. Vui lòng thử lại sau giây lát.",
+  "adRewardGrantedToast": "Đã mở khóa 1 gợi ý từ quảng cáo!",
+  "adRewardHintDialogCancel": "Để sau",
+  "adRewardHintDialogConfirm": "Xem quảng cáo",
+  "adRewardHintDialogMessage": "Xem một đoạn quảng cáo ngắn để nhận gợi ý nước đi tiếp theo.",
+  "adRewardHintDialogTitle": "Nhận thêm Gợi ý?",
+  "adRewardLifeGrantedToast": "Đã nhận thêm 1 mạng từ quảng cáo!"
 }
+

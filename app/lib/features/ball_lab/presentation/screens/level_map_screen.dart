@@ -84,8 +84,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
   void _changeChapter(int newIndex) {
     final LevelProviderService levelService =
         ref.read(levelProviderServiceProvider);
-    final int totalChapters =
-        levelService.getTotalChapters();
+    final int totalChapters = levelService.getTotalChapters();
     if (newIndex < 0 || newIndex >= totalChapters) return;
     setState(() {
       _selectedChapterIndex = newIndex;
@@ -235,8 +234,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
         ref.watch(progressionControllerProvider);
     final GameEconomy economy = ref.watch(economyControllerProvider);
 
-    final int totalChapters =
-        levelService.getTotalChapters();
+    final int totalChapters = levelService.getTotalChapters();
     final List<LevelData> levels = levelService.getLevelsForChapter(
       _selectedChapterIndex,
     );
@@ -244,8 +242,7 @@ class _LevelMapScreenState extends ConsumerState<LevelMapScreen> {
     final int totalStars = progression.totalStars;
     final int maxPossibleStars = levelService.totalLevels * 3;
 
-    final int activeChapter =
-        (progression.unlockedLevelMax - 1) ~/ _pageSize;
+    final int activeChapter = (progression.unlockedLevelMax - 1) ~/ _pageSize;
     final bool isViewingActiveChapter = _selectedChapterIndex == activeChapter;
 
     // Calculate stars in currently viewed chapter
@@ -402,180 +399,246 @@ class _MapHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F172A).withValues(alpha: 0.9),
+        color: const Color(0xFF0F172A).withValues(alpha: 0.95),
         border: const Border(
           bottom: BorderSide(
             color: Color(0x3306B6D4),
           ),
         ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          if (onBack != null)
-            IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white70, size: 20),
-              onPressed: onBack,
-              tooltip: l10n.backTooltip,
-            )
-          else
-            const SizedBox(width: 8),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  l10n.mapTitle,
-                  style: const TextStyle(
-                    color: Color(0xFF22D3EE),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                Text(
-                  l10n.mapSubtitle,
-                  style: const TextStyle(
-                    color: Colors.white54,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Sound Effects Quick Toggle Button
-          Consumer(
-            builder: (BuildContext ctx, WidgetRef ref, _) {
-              final bool isSoundEnabled =
-                  ref.watch(audioSettingsControllerProvider);
-              return Container(
-                margin: const EdgeInsets.only(right: 8),
-                child: IconButton(
-                  key: const ValueKey<String>('map_sound_toggle_button'),
-                  icon: Icon(
-                    isSoundEnabled
-                        ? Icons.volume_up_rounded
-                        : Icons.volume_off_rounded,
-                    color: isSoundEnabled
-                        ? const Color(0xFF22D3EE)
-                        : Colors.white38,
-                    size: 20,
-                  ),
-                  tooltip: isSoundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minWidth: 36,
-                    minHeight: 36,
-                  ),
-                  onPressed: () => ref
-                      .read(audioSettingsControllerProvider.notifier)
-                      .toggleSound(),
-                ),
-              );
-            },
-          ),
-
-          // Daily Lives Pill Badge
-          GestureDetector(
-            onTap: () {
-              showDialog<void>(
-                context: context,
-                builder: (_) => const OutOfLivesDialog(),
-              );
-            },
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: <Color>[Color(0xFF3B151E), Color(0xFF1E1418)],
-                ),
-                borderRadius: const BorderRadius.all(Radius.circular(20)),
-                border: Border.all(
-                  color: const Color(0xFFF43F5E).withValues(alpha: 0.6),
-                  width: 1.5,
-                ),
-                boxShadow: const <BoxShadow>[
-                  BoxShadow(
-                    color: Color(0x44F43F5E),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const Icon(
-                    Icons.favorite_rounded,
-                    size: 18,
-                    color: Color(0xFFF43F5E),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    '$lives',
-                    key: const ValueKey<String>('total_lives_counter'),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5,
+          // Top Row: Back button (if available) + Title & Subtitle + Action buttons (Sound, Info)
+          Row(
+            children: <Widget>[
+              if (onBack != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white70, size: 20),
+                    onPressed: onBack,
+                    tooltip: l10n.backTooltip,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
                     ),
                   ),
-                ],
+                ),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      l10n.mapTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color(0xFF22D3EE),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      l10n.mapSubtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+
+              const SizedBox(width: 8),
+
+              // Sound Effects Quick Toggle Button
+              Consumer(
+                builder: (BuildContext ctx, WidgetRef ref, _) {
+                  final bool isSoundEnabled =
+                      ref.watch(audioSettingsControllerProvider);
+                  return IconButton(
+                    key: const ValueKey<String>('map_sound_toggle_button'),
+                    icon: Icon(
+                      isSoundEnabled
+                          ? Icons.volume_up_rounded
+                          : Icons.volume_off_rounded,
+                      color: isSoundEnabled
+                          ? const Color(0xFF22D3EE)
+                          : Colors.white38,
+                      size: 20,
+                    ),
+                    tooltip: isSoundEnabled ? 'Tắt âm thanh' : 'Bật âm thanh',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
+                    ),
+                    onPressed: () => ref
+                        .read(audioSettingsControllerProvider.notifier)
+                        .toggleSound(),
+                  );
+                },
+              ),
+
+              // App Info & Open Source Licenses Button
+              IconButton(
+                key: const ValueKey<String>('map_info_button'),
+                icon: const Icon(
+                  Icons.info_outline_rounded,
+                  color: Colors.white70,
+                  size: 20,
+                ),
+                tooltip: 'Thông tin & Giấy phép',
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(
+                  minWidth: 36,
+                  minHeight: 36,
+                ),
+                onPressed: () => _showAboutAppDialog(context),
+              ),
+            ],
           ),
 
-          // Total Stars Pill Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: <Color>[Color(0xFF332A15), Color(0xFF1E1B18)],
-              ),
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
-              border: Border.all(
-                color: const Color(0xFFF59E0B).withValues(alpha: 0.6),
-                width: 1.5,
-              ),
-              boxShadow: const <BoxShadow>[
-                BoxShadow(
-                  color: Color(0x44F59E0B),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Icon(
-                  Icons.star_rounded,
-                  size: 20,
-                  color: Color(0xFFFBBF24),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  '$totalStars / $maxPossibleStars',
-                  key: const ValueKey<String>('total_stars_counter'),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
+          const SizedBox(height: 8),
+
+          // Bottom Row: Lives Pill on left, Total Stars Pill on right
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              // Daily Lives Pill Badge
+              GestureDetector(
+                onTap: () {
+                  showDialog<void>(
+                    context: context,
+                    builder: (_) => const OutOfLivesDialog(),
+                  );
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: <Color>[Color(0xFF3B151E), Color(0xFF1E1418)],
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    border: Border.all(
+                      color: const Color(0xFFF43F5E).withValues(alpha: 0.6),
+                      width: 1.5,
+                    ),
+                    boxShadow: const <BoxShadow>[
+                      BoxShadow(
+                        color: Color(0x44F43F5E),
+                        blurRadius: 8,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const Icon(
+                        Icons.favorite_rounded,
+                        size: 17,
+                        color: Color(0xFFF43F5E),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '$lives',
+                        key: const ValueKey<String>('total_lives_counter'),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              // Total Stars Pill Badge
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 13, vertical: 5),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: <Color>[Color(0xFF332A15), Color(0xFF1E1B18)],
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  border: Border.all(
+                    color: const Color(0xFFF59E0B).withValues(alpha: 0.6),
+                    width: 1.5,
+                  ),
+                  boxShadow: const <BoxShadow>[
+                    BoxShadow(
+                      color: Color(0x44F59E0B),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Icon(
+                      Icons.star_rounded,
+                      size: 18,
+                      color: Color(0xFFFBBF24),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '$totalStars / $maxPossibleStars',
+                      key: const ValueKey<String>('total_stars_counter'),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+
+  void _showAboutAppDialog(BuildContext context) {
+    showAboutDialog(
+      context: context,
+      applicationName: 'Ball Lab Puzzle',
+      applicationVersion: '1.0.0',
+      applicationIcon: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        child: Image.asset(
+          'assets/icon/playstore_icon.png',
+          width: 48,
+          height: 48,
+          fit: BoxFit.cover,
+        ),
+      ),
+      children: const <Widget>[
+        SizedBox(height: 12),
+        Text(
+          'A casual color sorting puzzle game.',
+          style: TextStyle(fontSize: 14),
+        ),
+      ],
     );
   }
 }
@@ -761,7 +824,8 @@ class _ChapterSelectorBar extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Text(
-                          l10n.chapterIndicator(chapterIndex + 1, totalChapters),
+                          l10n.chapterIndicator(
+                              chapterIndex + 1, totalChapters),
                           style: const TextStyle(
                             color: Color(0xFF22D3EE),
                             fontSize: 12,
@@ -971,8 +1035,7 @@ class _ChapterPickerSheet extends StatelessWidget {
                           : (isUnlocked
                               ? const Color(0xFF1E293B)
                               : const Color(0xFF141A29)),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(12)),
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
                       border: Border.all(
                         color: isCurrentActive
                             ? const Color(0xFF22D3EE)
@@ -1098,7 +1161,9 @@ class _LevelNodeWidget extends StatelessWidget {
             height: nodeSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isUnlocked ? const Color(0xFF0F172A) : const Color(0xFF1E293B),
+              color: isUnlocked
+                  ? const Color(0xFF0F172A)
+                  : const Color(0xFF1E293B),
               border: Border.all(
                 color: isUnlocked
                     ? primaryColor
@@ -1108,7 +1173,8 @@ class _LevelNodeWidget extends StatelessWidget {
               boxShadow: isUnlocked
                   ? <BoxShadow>[
                       BoxShadow(
-                        color: primaryColor.withValues(alpha: isCurrent ? 0.6 : 0.35),
+                        color: primaryColor.withValues(
+                            alpha: isCurrent ? 0.6 : 0.35),
                         blurRadius: isCurrent ? 20 : 12,
                         spreadRadius: isCurrent ? 3 : 1,
                       ),
@@ -1278,9 +1344,7 @@ class _LevelPreviewSheet extends StatelessWidget {
           const SizedBox(height: 6),
 
           Text(
-            isMilestone
-                ? l10n.milestoneLevelDesc
-                : l10n.normalLevelDesc,
+            isMilestone ? l10n.milestoneLevelDesc : l10n.normalLevelDesc,
             style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
 
@@ -1365,7 +1429,8 @@ class _LevelPreviewSheet extends StatelessWidget {
               onPressed: onStart,
               child: Text(
                 l10n.buttonStartExperiment,
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
               ),
             ),
           ),

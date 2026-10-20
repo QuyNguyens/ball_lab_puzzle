@@ -3,12 +3,16 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/models/active_game_session.dart';
 import '../../domain/models/game_economy.dart';
+import '../../domain/models/game_state.dart';
 import '../../domain/models/level_record.dart';
 import '../../domain/models/puzzle_move.dart';
 import '../../domain/models/tube.dart';
 import '../../domain/services/level_provider_service.dart';
+import '../../domain/services/rewarded_ad_service.dart';
+import '../controllers/audio_controller.dart';
 import '../controllers/economy_controller.dart';
 import '../controllers/game_controller.dart';
 import '../controllers/progression_controller.dart';
@@ -18,8 +22,6 @@ import '../widgets/level_completed_dialog.dart';
 import '../widgets/level_failed_dialog.dart';
 import '../widgets/out_of_lives_dialog.dart';
 import '../widgets/tube_board.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../controllers/audio_controller.dart';
 
 /// Primary screen for playing Ball Lab Puzzle.
 class BallLabScreen extends ConsumerStatefulWidget {
@@ -46,6 +48,7 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
 
   bool _hasPlayedLowMovesWarning = false;
   bool _hasPlayedCriticalMovesWarning = false;
+  bool _isRequestingAd = false;
 
   PuzzleMove? _activeHint;
   Timer? _hintAutoDismissTimer;
@@ -191,7 +194,12 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
             if (!economy.canPlay) {
               showDialog<void>(
                 context: context,
-                builder: (_) => const OutOfLivesDialog(),
+                builder: (_) => OutOfLivesDialog(
+                  onLifeGranted: () {
+                    _hasDeductedLifeForDefeat = false;
+                    ref.read(gameControllerProvider.notifier).restart();
+                  },
+                ),
               );
               return;
             }
@@ -205,7 +213,14 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
             if (!economy.canPlay) {
               showDialog<void>(
                 context: context,
-                builder: (_) => const OutOfLivesDialog(),
+                builder: (_) => OutOfLivesDialog(
+                  onLifeGranted: () {
+                    _hasDeductedLifeForDefeat = false;
+                    ref
+                        .read(gameControllerProvider.notifier)
+                        .loadLevel(nextLevelId);
+                  },
+                ),
               );
               return;
             }
@@ -249,7 +264,12 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
             if (!economy.canPlay) {
               showDialog<void>(
                 context: context,
-                builder: (_) => const OutOfLivesDialog(),
+                builder: (_) => OutOfLivesDialog(
+                  onLifeGranted: () {
+                    _hasDeductedLifeForDefeat = false;
+                    ref.read(gameControllerProvider.notifier).restart();
+                  },
+                ),
               );
               return;
             }
@@ -274,12 +294,128 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
     });
   }
 
+  /// Handles showing rewarded ad to earn an extra hint when daily quota is depleted.
+  Future<void> _handleRewardedAdHint({
+    required GameState gameState,
+    required GameController controller,
+    required AppLocalizations l10n,
+  }) async {
+    if (_isRequestingAd) return;
+    if (gameState.isCompleted || gameState.isOutOfMoves) return;
+
+    final RewardedAdState adState = ref.read(rewardedAdServiceProvider);
+
+    // If ad is not ready, show friendly message and request preload
+    if (!adState.isReady) {
+      if (adState.isLoading) {
+        _showToast(context, l10n.adNotReadyMessage);
+      } else {
+        ref.read(rewardedAdServiceProvider.notifier).loadAd();
+        _showToast(context, l10n.adNotReadyMessage);
+      }
+      return;
+    }
+
+    // Explicit confirmation dialog before displaying fullscreen rewarded ad
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E293B),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
+        title: Row(
+          children: <Widget>[
+            const Icon(Icons.lightbulb_rounded, color: Color(0xFFF59E0B)),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                l10n.adRewardHintDialogTitle,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          l10n.adRewardHintDialogMessage,
+          style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              l10n.adRewardHintDialogCancel,
+              style: const TextStyle(color: Colors.white54),
+            ),
+          ),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFF59E0B),
+              foregroundColor: Colors.black,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            icon: const Icon(Icons.ondemand_video_rounded, size: 18),
+            label: Text(
+              l10n.adRewardHintDialogConfirm,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() {
+      _isRequestingAd = true;
+    });
+
+    bool rewardGranted = false;
+    ref.read(rewardedAdServiceProvider.notifier).showAd(
+      onUserEarnedReward: () async {
+        if (rewardGranted) return;
+        rewardGranted = true;
+        await ref.read(economyControllerProvider.notifier).addRewardedHint(1);
+        if (mounted) {
+          _showToast(context, l10n.adRewardGrantedToast);
+        }
+      },
+      onAdClosed: () {
+        if (mounted) {
+          setState(() {
+            _isRequestingAd = false;
+          });
+        } else {
+          _isRequestingAd = false;
+        }
+      },
+      onAdFailedToShow: (String reason) {
+        if (mounted) {
+          setState(() {
+            _isRequestingAd = false;
+          });
+          _showToast(context, l10n.adNotReadyMessage);
+        } else {
+          _isRequestingAd = false;
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final GamePlayState state = ref.watch(gameControllerProvider);
     final GameController controller = ref.read(gameControllerProvider.notifier);
     final GameEconomy economy = ref.watch(economyControllerProvider);
+    final RewardedAdState adState = ref.watch(rewardedAdServiceProvider);
 
     // Listen for level completion and out-of-moves events
     ref.listen<GamePlayState>(
@@ -307,7 +443,9 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
             _hasPlayedCriticalMovesWarning = true;
             _hasPlayedLowMovesWarning = true;
             ref.read(gameAudioServiceProvider).playCriticalMovesWarning();
-          } else if (movesLeft <= 3 && movesLeft > 1 && !_hasPlayedLowMovesWarning) {
+          } else if (movesLeft <= 3 &&
+              movesLeft > 1 &&
+              !_hasPlayedLowMovesWarning) {
             _hasPlayedLowMovesWarning = true;
             ref.read(gameAudioServiceProvider).playLowMovesWarning();
           } else if (movesLeft > 3) {
@@ -351,9 +489,8 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
     );
 
     // Calculate completed tubes count for the progress indicator
-    final int completedTubes = state.gameState.tubes
-        .where((Tube t) => t.isSolved)
-        .length;
+    final int completedTubes =
+        state.gameState.tubes.where((Tube t) => t.isSolved).length;
     final int totalTargetTubes = state.currentLevel.distinctColors.length;
 
     return Scaffold(
@@ -418,7 +555,15 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
                   if (!economy.canPlay) {
                     showDialog<void>(
                       context: context,
-                      builder: (_) => const OutOfLivesDialog(),
+                      builder: (_) => OutOfLivesDialog(
+                        onLifeGranted: () {
+                          _hasDeductedLifeForDefeat = false;
+                          ref
+                              .read(economyControllerProvider.notifier)
+                              .clearSession();
+                          controller.restart();
+                        },
+                      ),
                     );
                     return;
                   }
@@ -431,7 +576,8 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
 
               // Progress & Instruction banner
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -458,7 +604,8 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.08),
-                        borderRadius: const BorderRadius.all(Radius.circular(10)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
                       ),
                       child: Text(
                         l10n.tubesSolvedProgress(
@@ -553,7 +700,15 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
                   if (!economy.canPlay) {
                     showDialog<void>(
                       context: context,
-                      builder: (_) => const OutOfLivesDialog(),
+                      builder: (_) => OutOfLivesDialog(
+                        onLifeGranted: () {
+                          _hasDeductedLifeForDefeat = false;
+                          ref
+                              .read(economyControllerProvider.notifier)
+                              .clearSession();
+                          controller.restart();
+                        },
+                      ),
                     );
                     return;
                   }
@@ -561,15 +716,18 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
                   ref.read(economyControllerProvider.notifier).clearSession();
                   controller.restart();
                 },
+                isAdLoading: _isRequestingAd ||
+                    (economy.hintCount == 0 && adState.isLoading),
                 onHint: () {
                   if (state.gameState.isCompleted ||
                       state.gameState.isOutOfMoves) {
                     return;
                   }
                   if (!economy.canHint) {
-                    _showToast(
-                      context,
-                      l10n.outOfHintsToast,
+                    _handleRewardedAdHint(
+                      gameState: state.gameState,
+                      controller: controller,
+                      l10n: l10n,
                     );
                     return;
                   }
@@ -605,9 +763,10 @@ class _BallLabScreenState extends ConsumerState<BallLabScreen>
                     }
                   }
                 },
-                onOutOfHints: () => _showToast(
-                  context,
-                  l10n.outOfHintsToast,
+                onOutOfHints: () => _handleRewardedAdHint(
+                  gameState: state.gameState,
+                  controller: controller,
+                  l10n: l10n,
                 ),
               ),
             ],

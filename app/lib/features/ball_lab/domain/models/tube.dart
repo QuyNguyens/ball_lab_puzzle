@@ -10,7 +10,7 @@ import 'ball_color.dart';
 @immutable
 class Tube {
   Tube({required List<BallColor> balls, this.capacity = 4})
-    : balls = List<BallColor>.unmodifiable(balls) {
+      : balls = List<BallColor>.unmodifiable(balls) {
     if (capacity <= 0) {
       throw ArgumentError.value(
         capacity,

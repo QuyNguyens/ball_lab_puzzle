@@ -305,7 +305,7 @@ abstract class AppLocalizations {
   /// No description provided for @outOfLivesMessage.
   ///
   /// In en, this message translates to:
-  /// **'You have used all 5 free daily experiment attempts.\nYour lives replenish every midnight (00:00 VN).'**
+  /// **'You have used all 3 free daily experiment attempts.\nYour lives replenish every midnight (00:00 VN).'**
   String get outOfLivesMessage;
 
   /// No description provided for @nextFreeRefillIn.
@@ -476,251 +476,71 @@ abstract class AppLocalizations {
   /// **'Complete Level {levelId} to unlock this experiment!'**
   String levelLockedToast(int levelId);
 
-  /// No description provided for @authCreateAccount.
+  /// No description provided for @actionHintAd.
   ///
   /// In en, this message translates to:
-  /// **'Create an account'**
-  String get authCreateAccount;
+  /// **'Hint (+1 Ad)'**
+  String get actionHintAd;
 
-  /// No description provided for @authCredentialsRequired.
+  /// No description provided for @adDailyLimitReachedTag.
   ///
   /// In en, this message translates to:
-  /// **'Please enter your email and password.'**
-  String get authCredentialsRequired;
+  /// **'3/3 CLAIMED'**
+  String get adDailyLimitReachedTag;
 
-  /// No description provided for @authEmailHint.
+  /// No description provided for @adDailyLimitReachedToast.
   ///
   /// In en, this message translates to:
-  /// **'Enter your email'**
-  String get authEmailHint;
+  /// **'You have reached the daily limit of 3 rewarded lives. Please return tomorrow!'**
+  String get adDailyLimitReachedToast;
 
-  /// No description provided for @authEmailInvalid.
+  /// No description provided for @adFailedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Please enter a valid email address'**
-  String get authEmailInvalid;
+  /// **'Ad could not be loaded. Please check your network connection.'**
+  String get adFailedMessage;
 
-  /// No description provided for @authEmailRequired.
+  /// No description provided for @adNotReadyMessage.
   ///
   /// In en, this message translates to:
-  /// **'Please enter an email address'**
-  String get authEmailRequired;
+  /// **'Ad is loading. Please try again in a moment.'**
+  String get adNotReadyMessage;
 
-  /// No description provided for @authLoginButton.
+  /// No description provided for @adRewardGrantedToast.
   ///
   /// In en, this message translates to:
-  /// **'Login'**
-  String get authLoginButton;
+  /// **'Hint unlocked from ad!'**
+  String get adRewardGrantedToast;
 
-  /// No description provided for @authLoginFailed.
+  /// No description provided for @adRewardHintDialogCancel.
   ///
   /// In en, this message translates to:
-  /// **'Wrong email or password.'**
-  String get authLoginFailed;
+  /// **'Not Now'**
+  String get adRewardHintDialogCancel;
 
-  /// No description provided for @authLoginSubtitle.
+  /// No description provided for @adRewardHintDialogConfirm.
   ///
   /// In en, this message translates to:
-  /// **'You can login with your email and password'**
-  String get authLoginSubtitle;
+  /// **'Watch Ad'**
+  String get adRewardHintDialogConfirm;
 
-  /// No description provided for @authLoginTitle.
+  /// No description provided for @adRewardHintDialogMessage.
   ///
   /// In en, this message translates to:
-  /// **'Login'**
-  String get authLoginTitle;
+  /// **'Watch a short video ad to reveal the next best move.'**
+  String get adRewardHintDialogMessage;
 
-  /// No description provided for @authPasswordHint.
+  /// No description provided for @adRewardHintDialogTitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter your password'**
-  String get authPasswordHint;
+  /// **'Need a Hint?'**
+  String get adRewardHintDialogTitle;
 
-  /// No description provided for @authPasswordLabel.
+  /// No description provided for @adRewardLifeGrantedToast.
   ///
   /// In en, this message translates to:
-  /// **'Password'**
-  String get authPasswordLabel;
-
-  /// No description provided for @authRegisterButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Register'**
-  String get authRegisterButton;
-
-  /// No description provided for @authRegisterCancel.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get authRegisterCancel;
-
-  /// No description provided for @authRegisterTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'New Profile'**
-  String get authRegisterTitle;
-
-  /// No description provided for @authUsernameHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter your username'**
-  String get authUsernameHint;
-
-  /// No description provided for @authUsernameLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Username'**
-  String get authUsernameLabel;
-
-  /// No description provided for @authWelcome.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to the app'**
-  String get authWelcome;
-
-  /// Body of the permission demo screens.
-  ///
-  /// In en, this message translates to:
-  /// **'You can see this page because your permissions include the \"{area}\" area.'**
-  String demoAreaBody(String area);
-
-  /// No description provided for @demoComponentRulesTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Component rules'**
-  String get demoComponentRulesTitle;
-
-  /// No description provided for @demoDeleteAccountHidden.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete account (hidden)'**
-  String get demoDeleteAccountHidden;
-
-  /// No description provided for @demoEditProfileDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit profile (disabled)'**
-  String get demoEditProfileDisabled;
-
-  /// No description provided for @demoEmailReadonly.
-  ///
-  /// In en, this message translates to:
-  /// **'Email (read-only)'**
-  String get demoEmailReadonly;
-
-  /// No description provided for @demoOrdersTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Orders'**
-  String get demoOrdersTitle;
-
-  /// No description provided for @demoPermissionsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Permission demo'**
-  String get demoPermissionsTitle;
-
-  /// No description provided for @demoProfileTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Profile'**
-  String get demoProfileTitle;
-
-  /// No description provided for @demoReportsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Reports'**
-  String get demoReportsTitle;
-
-  /// No description provided for @demoSettingsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get demoSettingsTitle;
-
-  /// No description provided for @homeBottomNavFirst.
-  ///
-  /// In en, this message translates to:
-  /// **'Home'**
-  String get homeBottomNavFirst;
-
-  /// No description provided for @homeBottomNavSecond.
-  ///
-  /// In en, this message translates to:
-  /// **'Info'**
-  String get homeBottomNavSecond;
-
-  /// No description provided for @homeInfo.
-  ///
-  /// In en, this message translates to:
-  /// **'Info'**
-  String get homeInfo;
-
-  /// No description provided for @homeIntro.
-  ///
-  /// In en, this message translates to:
-  /// **'Hi, I am Eren 👋🏽'**
-  String get homeIntro;
-
-  /// No description provided for @homeMenuTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Menu'**
-  String get homeMenuTitle;
-
-  /// No description provided for @homeMore.
-  ///
-  /// In en, this message translates to:
-  /// **'Learn More'**
-  String get homeMore;
-
-  /// No description provided for @homeThemeMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Theme Mode'**
-  String get homeThemeMode;
-
-  /// No description provided for @homeThemeModeDark.
-  ///
-  /// In en, this message translates to:
-  /// **'Dark'**
-  String get homeThemeModeDark;
-
-  /// No description provided for @homeThemeModeLight.
-  ///
-  /// In en, this message translates to:
-  /// **'Light'**
-  String get homeThemeModeLight;
-
-  /// No description provided for @homeThemeModeSystem.
-  ///
-  /// In en, this message translates to:
-  /// **'System'**
-  String get homeThemeModeSystem;
-
-  /// No description provided for @homeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Home'**
-  String get homeTitle;
-
-  /// No description provided for @homeToggleLanguage.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Language'**
-  String get homeToggleLanguage;
-
-  /// No description provided for @homeToggleTheme.
-  ///
-  /// No description provided for @homeToggleTheme.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Theme'**
-  String get homeToggleTheme;
-
-  /// In en, this message translates to:
-  /// **'Sound Effects'**
-  String get soundEffectsLabel;
+  /// **'Life replenished (+1 Life)!'**
+  String get adRewardLifeGrantedToast;
 }
 
 class _AppLocalizationsDelegate

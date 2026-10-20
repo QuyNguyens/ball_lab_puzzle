@@ -12,10 +12,6 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
-import 'package:widgetbook_catalog/app/features/authentication/presentation/login/login_screen.use_cases.dart'
-    as _widgetbook_catalog_app_features_authentication_presentation_login_login_screen_use_cases;
-import 'package:widgetbook_catalog/app/features/home/presentation/home_screen.use_cases.dart'
-    as _widgetbook_catalog_app_features_home_presentation_home_screen_use_cases;
 import 'package:widgetbook_catalog/core/api_error_ui.use_cases.dart'
     as _widgetbook_catalog_core_api_error_ui_use_cases;
 import 'package:widgetbook_catalog/core/no_permission_page.use_cases.dart'
@@ -28,55 +24,6 @@ import 'package:widgetbook_catalog/core/update_dialog.use_cases.dart'
     as _widgetbook_catalog_core_update_dialog_use_cases;
 
 final directories = <_widgetbook.WidgetbookNode>[
-  _widgetbook.WidgetbookCategory(
-    name: 'App',
-    children: [
-      _widgetbook.WidgetbookFolder(
-        name: 'authentication',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'LoginScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Login fails',
-                builder:
-                    _widgetbook_catalog_app_features_authentication_presentation_login_login_screen_use_cases
-                        .buildLoginScreenFailing,
-              ),
-              _widgetbook.WidgetbookUseCase(
-                name: 'Remembered credentials',
-                builder:
-                    _widgetbook_catalog_app_features_authentication_presentation_login_login_screen_use_cases
-                        .buildLoginScreenRemembered,
-              ),
-              _widgetbook.WidgetbookUseCase(
-                name: 'Signed out',
-                builder:
-                    _widgetbook_catalog_app_features_authentication_presentation_login_login_screen_use_cases
-                        .buildLoginScreen,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'home',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'HomeScreen',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Demo permissions',
-                builder:
-                    _widgetbook_catalog_app_features_home_presentation_home_screen_use_cases
-                        .buildHomeScreen,
-              ),
-            ],
-          ),
-        ],
-      ),
-    ],
-  ),
   _widgetbook.WidgetbookCategory(
     name: 'Core',
     children: [

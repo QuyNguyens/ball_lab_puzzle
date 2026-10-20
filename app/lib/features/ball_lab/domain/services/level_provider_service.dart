@@ -291,8 +291,7 @@ class LevelProviderService {
     if (levelId <= 25) {
       // Stage 1: Warmup - 3 colors, 5 tubes
       colorCount = 3;
-      targetSteps =
-          14 + ((levelId - 11) * 0.4).round() + (isMilestone ? 3 : 0);
+      targetSteps = 14 + ((levelId - 11) * 0.4).round() + (isMilestone ? 3 : 0);
     } else if (levelId <= 75) {
       // Stage 2: Foundation - 4 colors, 6 tubes
       colorCount = 4;
@@ -391,8 +390,7 @@ class LevelProviderService {
       if (candidates.length > 1 && lastFrom != -1 && lastTo != -1) {
         final List<_BackwardCandidate> nonReversal = candidates
             .where(
-              (_BackwardCandidate c) =>
-                  !(c.from == lastTo && c.to == lastFrom),
+              (_BackwardCandidate c) => !(c.from == lastTo && c.to == lastFrom),
             )
             .toList();
         if (nonReversal.isNotEmpty) {
@@ -400,8 +398,7 @@ class LevelProviderService {
         }
       }
 
-      final _BackwardCandidate chosen =
-          filtered[rng.nextInt(filtered.length)];
+      final _BackwardCandidate chosen = filtered[rng.nextInt(filtered.length)];
       final BallColor ball = tubes[chosen.from].removeLast();
       tubes[chosen.to].add(ball);
 

@@ -13,8 +13,7 @@ void main() {
   }) {
     return ProviderScope(
       overrides: <Override>[
-        if (repo != null)
-          progressionRepositoryProvider.overrideWithValue(repo),
+        if (repo != null) progressionRepositoryProvider.overrideWithValue(repo),
       ],
       child: const MaterialApp(
         home: LevelMapScreen(),
@@ -23,7 +22,8 @@ void main() {
   }
 
   group('LevelMapScreen - Visuals & Progression Rendering', () {
-    testWidgets('1. Renders title header, total stars pill, and all 10 level nodes', (
+    testWidgets(
+        '1. Renders title header, total stars pill, and all 10 level nodes', (
       WidgetTester tester,
     ) async {
       final InMemoryProgressionRepository repo =
@@ -33,15 +33,18 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('BALL LAB JOURNEY'), findsOneWidget);
-      expect(find.byKey(const ValueKey<String>('total_stars_counter')), findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('total_stars_counter')),
+          findsOneWidget);
       expect(find.text('0 / 2997'), findsOneWidget);
 
       // Level 1 node is visible and unlocked with PLAY label
-      expect(find.byKey(const ValueKey<String>('level_node_1')), findsOneWidget);
+      expect(
+          find.byKey(const ValueKey<String>('level_node_1')), findsOneWidget);
       expect(find.text('PLAY'), findsOneWidget);
     });
 
-    testWidgets('2. Tapping a locked level displays explanatory unlock snackbar', (
+    testWidgets(
+        '2. Tapping a locked level displays explanatory unlock snackbar', (
       WidgetTester tester,
     ) async {
       final InMemoryProgressionRepository repo =
@@ -51,7 +54,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap on Level 2 (locked for new player)
-      final Finder level2Finder = find.byKey(const ValueKey<String>('level_node_2'));
+      final Finder level2Finder =
+          find.byKey(const ValueKey<String>('level_node_2'));
       // If not rendered yet because of scroll offset, scroll or tap the lock icon
       // In our layout Level 2 is around y = 170 which is well within 600px height
       if (level2Finder.evaluate().isNotEmpty) {
@@ -84,15 +88,19 @@ void main() {
       expect(find.text('COLORS'), findsOneWidget);
       expect(find.text('TUBES'), findsOneWidget);
       expect(find.text('MAX MOVES'), findsOneWidget);
-      expect(find.byKey(const ValueKey<String>('level_preview_start_button')), findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('level_preview_start_button')),
+          findsOneWidget);
     });
 
-    testWidgets('4. Completed levels display their earned stars and total stars counter updates', (
+    testWidgets(
+        '4. Completed levels display their earned stars and total stars counter updates',
+        (
       WidgetTester tester,
     ) async {
       // Setup progression with Level 1 completed (3 stars) and Level 2 unlocked (current)
       GameProgression progression = const GameProgression();
-      progression = progression.recordLevelCompletion(levelId: 1, stars: 3, movesUsed: 12);
+      progression = progression.recordLevelCompletion(
+          levelId: 1, stars: 3, movesUsed: 12);
 
       final InMemoryProgressionRepository repo =
           InMemoryProgressionRepository(progression);
@@ -104,8 +112,10 @@ void main() {
       expect(find.text('3 / 2997'), findsOneWidget);
 
       // Level 1 node shows 3 stars under it
-      expect(find.byKey(const ValueKey<String>('level_node_1')), findsOneWidget);
-      expect(find.byKey(const ValueKey<String>('level_node_2')), findsOneWidget);
+      expect(
+          find.byKey(const ValueKey<String>('level_node_1')), findsOneWidget);
+      expect(
+          find.byKey(const ValueKey<String>('level_node_2')), findsOneWidget);
 
       // Level 2 is now current (has PLAY badge)
       expect(find.text('PLAY'), findsOneWidget);

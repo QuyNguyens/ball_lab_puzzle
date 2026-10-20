@@ -120,15 +120,19 @@ void main() {
       expect(state.isOutOfMoves, isFalse);
     });
 
-    test('All curated levels have verified minMoves and solvable within maxMoves', () {
+    test(
+        'All curated levels have verified minMoves and solvable within maxMoves',
+        () {
       const PuzzleSolver solver = PuzzleSolver();
       for (final LevelData level in service.getLevels()) {
         expect(level.minMoves, isNotNull);
         expect(level.maxMoves, greaterThan(level.minMoves!));
 
         final int? shortestPath = solver.findShortestMoveCount(level);
-        expect(shortestPath, isNotNull, reason: 'Level ${level.levelId} must be solvable');
-        expect(shortestPath, equals(level.minMoves), reason: 'Level ${level.levelId} shortest path must match minMoves');
+        expect(shortestPath, isNotNull,
+            reason: 'Level ${level.levelId} must be solvable');
+        expect(shortestPath, equals(level.minMoves),
+            reason: 'Level ${level.levelId} shortest path must match minMoves');
         expect(shortestPath, lessThanOrEqualTo(level.maxMoves));
       }
     });

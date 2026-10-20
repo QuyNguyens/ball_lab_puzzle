@@ -18,7 +18,8 @@ abstract interface class ProgressionRepository {
 
 /// Hive-backed implementation storing serialized progression in a `Box<String>`.
 class HiveProgressionRepository implements ProgressionRepository {
-  HiveProgressionRepository(this._box, {this.storageKey = 'ball_lab_progression'});
+  HiveProgressionRepository(this._box,
+      {this.storageKey = 'ball_lab_progression'});
 
   final Box<String> _box;
   final String storageKey;
@@ -62,7 +63,8 @@ class HiveProgressionRepository implements ProgressionRepository {
 
 /// In-memory progression repository for unit tests and stateless runs.
 class InMemoryProgressionRepository implements ProgressionRepository {
-  InMemoryProgressionRepository([GameProgression initial = const GameProgression()])
+  InMemoryProgressionRepository(
+      [GameProgression initial = const GameProgression()])
       : _progression = initial;
 
   GameProgression _progression;

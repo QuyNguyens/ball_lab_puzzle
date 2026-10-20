@@ -120,7 +120,7 @@
   "movesUsedLabel": "MOVES USED",
   "maxLimitLabel": "MAX LIMIT",
   "outOfLivesTitle": "OUT OF LIVES",
-  "outOfLivesMessage": "You have used all 5 free daily experiment attempts.\nYour lives replenish every midnight (00:00 VN).",
+  "outOfLivesMessage": "You have used all 3 free daily experiment attempts.\nYour lives replenish every midnight (00:00 VN).",
   "nextFreeRefillIn": "NEXT FREE REFILL IN",
   "watchVideoOption": "Watch Lab Video (+1 Life)",
   "comingSoonTag": "COMING SOON",
@@ -220,55 +220,16 @@
       }
     }
   },
-
-  "authCreateAccount": "Create an account",
-  "authCredentialsRequired": "Please enter your email and password.",
-  "authEmailHint": "Enter your email",
-  "authEmailInvalid": "Please enter a valid email address",
-  "authEmailRequired": "Please enter an email address",
-  "authLoginButton": "Login",
-  "authLoginFailed": "Wrong email or password.",
-  "authLoginSubtitle": "You can login with your email and password",
-  "authLoginTitle": "Login",
-  "authPasswordHint": "Enter your password",
-  "authPasswordLabel": "Password",
-  "authRegisterButton": "Register",
-  "authRegisterCancel": "Cancel",
-  "authRegisterTitle": "New Profile",
-  "authUsernameHint": "Enter your username",
-  "authUsernameLabel": "Username",
-  "authWelcome": "Welcome to the app",
-  "demoAreaBody": "You can see this page because your permissions include the \"{area}\" area.",
-  "@demoAreaBody": {
-    "description": "Body of the permission demo screens.",
-    "placeholders": {
-      "area": {
-        "type": "String",
-        "example": "profile"
-      }
-    }
-  },
-  "demoComponentRulesTitle": "Component rules",
-  "demoDeleteAccountHidden": "Delete account (hidden)",
-  "demoEditProfileDisabled": "Edit profile (disabled)",
-  "demoEmailReadonly": "Email (read-only)",
-  "demoOrdersTitle": "Orders",
-  "demoPermissionsTitle": "Permission demo",
-  "demoProfileTitle": "Profile",
-  "demoReportsTitle": "Reports",
-  "demoSettingsTitle": "Settings",
-  "homeBottomNavFirst": "Home",
-  "homeBottomNavSecond": "Info",
-  "homeInfo": "Info",
-  "homeIntro": "Hi, I am Eren 👋🏽",
-  "homeMenuTitle": "Menu",
-  "homeMore": "Learn More",
-  "homeThemeMode": "Theme Mode",
-  "homeThemeModeDark": "Dark",
-  "homeThemeModeLight": "Light",
-  "homeThemeModeSystem": "System",
-  "homeTitle": "Home",
-  "homeToggleLanguage": "Change Language",
-  "homeToggleTheme": "Change Theme",
-  "soundEffectsLabel": "Sound Effects"
+  "actionHintAd": "Hint (+1 Ad)",
+  "adDailyLimitReachedTag": "3/3 CLAIMED",
+  "adDailyLimitReachedToast": "You have reached the daily limit of 3 rewarded lives. Please return tomorrow!",
+  "adFailedMessage": "Ad could not be loaded. Please check your network connection.",
+  "adNotReadyMessage": "Ad is loading. Please try again in a moment.",
+  "adRewardGrantedToast": "Hint unlocked from ad!",
+  "adRewardHintDialogCancel": "Not Now",
+  "adRewardHintDialogConfirm": "Watch Ad",
+  "adRewardHintDialogMessage": "Watch a short video ad to reveal the next best move.",
+  "adRewardHintDialogTitle": "Need a Hint?",
+  "adRewardLifeGrantedToast": "Life replenished (+1 Life)!"
 }
+

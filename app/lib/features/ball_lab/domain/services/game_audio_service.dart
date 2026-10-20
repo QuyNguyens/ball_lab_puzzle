@@ -62,12 +62,12 @@ class GameAudioService {
       await player.setVolume(volume).catchError((_) {});
       await player
           .play(
-            AssetSource('audio/sfx/$sfxFileName'),
-            volume: volume,
-          )
+        AssetSource('audio/sfx/$sfxFileName'),
+        volume: volume,
+      )
           .catchError((Object err) {
-            debugPrint('GameAudioService: Failed to play $sfxFileName: $err');
-          });
+        debugPrint('GameAudioService: Failed to play $sfxFileName: $err');
+      });
     } catch (e) {
       debugPrint('GameAudioService: Safe error intercept on $sfxFileName: $e');
     }

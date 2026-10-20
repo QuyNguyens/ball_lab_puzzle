@@ -135,7 +135,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get outOfLivesMessage =>
-      'Bạn đã sử dụng hết 5 lượt chơi miễn phí hôm nay.\nSố mạng sẽ hồi phục vào nửa đêm (00:00 VN).';
+      'Bạn đã sử dụng hết 3 lượt chơi miễn phí hôm nay.\nSố mạng sẽ hồi phục vào nửa đêm (00:00 VN).';
 
   @override
   String get nextFreeRefillIn => 'HỒI PHỤC MIỄN PHÍ SAU';
@@ -238,127 +238,39 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get authCreateAccount => 'Tạo tài khoản';
+  String get actionHintAd => 'Gợi ý (+1 QC)';
 
   @override
-  String get authCredentialsRequired => 'Vui lòng nhập email và mật khẩu.';
+  String get adDailyLimitReachedTag => '3/3 ĐÃ NHẬN';
 
   @override
-  String get authEmailHint => 'Nhập email của bạn';
+  String get adDailyLimitReachedToast =>
+      'Bạn đã nhận tối đa 3 mạng thưởng hôm nay. Vui lòng quay lại vào ngày mai!';
 
   @override
-  String get authEmailInvalid => 'Vui lòng nhập địa chỉ email hợp lệ';
+  String get adFailedMessage =>
+      'Không thể tải quảng cáo. Vui lòng kiểm tra kết nối mạng.';
 
   @override
-  String get authEmailRequired => 'Vui lòng nhập địa chỉ email';
+  String get adNotReadyMessage =>
+      'Quảng cáo đang tải. Vui lòng thử lại sau giây lát.';
 
   @override
-  String get authLoginButton => 'Đăng nhập';
+  String get adRewardGrantedToast => 'Đã mở khóa 1 gợi ý từ quảng cáo!';
 
   @override
-  String get authLoginFailed => 'Sai email hoặc mật khẩu.';
+  String get adRewardHintDialogCancel => 'Để sau';
 
   @override
-  String get authLoginSubtitle => 'Bạn có thể đăng nhập bằng email và mật khẩu';
+  String get adRewardHintDialogConfirm => 'Xem quảng cáo';
 
   @override
-  String get authLoginTitle => 'Đăng nhập';
+  String get adRewardHintDialogMessage =>
+      'Xem một đoạn quảng cáo ngắn để nhận gợi ý nước đi tiếp theo.';
 
   @override
-  String get authPasswordHint => 'Nhập mật khẩu của bạn';
+  String get adRewardHintDialogTitle => 'Nhận thêm Gợi ý?';
 
   @override
-  String get authPasswordLabel => 'Mật khẩu';
-
-  @override
-  String get authRegisterButton => 'Đăng ký';
-
-  @override
-  String get authRegisterCancel => 'Hủy';
-
-  @override
-  String get authRegisterTitle => 'Hồ sơ mới';
-
-  @override
-  String get authUsernameHint => 'Nhập tên người dùng';
-
-  @override
-  String get authUsernameLabel => 'Tên người dùng';
-
-  @override
-  String get authWelcome => 'Chào mừng đến với ứng dụng';
-
-  @override
-  String demoAreaBody(String area) {
-    return 'Bạn có thể xem trang này vì quyền của bạn bao gồm khu vực \"$area\".';
-  }
-
-  @override
-  String get demoComponentRulesTitle => 'Quy tắc thành phần';
-
-  @override
-  String get demoDeleteAccountHidden => 'Xóa tài khoản (ẩn)';
-
-  @override
-  String get demoEditProfileDisabled => 'Sửa hồ sơ (vô hiệu)';
-
-  @override
-  String get demoEmailReadonly => 'Email (chỉ đọc)';
-
-  @override
-  String get demoOrdersTitle => 'Đơn hàng';
-
-  @override
-  String get demoPermissionsTitle => 'Bản demo phân quyền';
-
-  @override
-  String get demoProfileTitle => 'Hồ sơ';
-
-  @override
-  String get demoReportsTitle => 'Báo cáo';
-
-  @override
-  String get demoSettingsTitle => 'Cài đặt';
-
-  @override
-  String get homeBottomNavFirst => 'Trang chủ';
-
-  @override
-  String get homeBottomNavSecond => 'Thông tin';
-
-  @override
-  String get homeInfo => 'Thông tin';
-
-  @override
-  String get homeIntro => 'Xin chào, tôi là Eren 👋🏽';
-
-  @override
-  String get homeMenuTitle => 'Menu';
-
-  @override
-  String get homeMore => 'Tìm hiểu thêm';
-
-  @override
-  String get homeThemeMode => 'Chế độ giao diện';
-
-  @override
-  String get homeThemeModeDark => 'Tối';
-
-  @override
-  String get homeThemeModeLight => 'Sáng';
-
-  @override
-  String get homeThemeModeSystem => 'Hệ thống';
-
-  @override
-  String get homeTitle => 'Trang chủ';
-
-  @override
-  String get homeToggleLanguage => 'Đổi ngôn ngữ';
-
-  @override
-  String get homeToggleTheme => 'Đổi giao diện';
-
-  @override
-  String get soundEffectsLabel => 'Hiệu ứng âm thanh';
+  String get adRewardLifeGrantedToast => 'Đã nhận thêm 1 mạng từ quảng cáo!';
 }

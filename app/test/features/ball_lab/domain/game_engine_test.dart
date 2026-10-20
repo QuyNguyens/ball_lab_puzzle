@@ -367,7 +367,9 @@ void main() {
       expect(
         () => LevelData(
           levelId: -1,
-          initialTubes: <Tube>[Tube(balls: const <BallColor>[red])],
+          initialTubes: <Tube>[
+            Tube(balls: const <BallColor>[red])
+          ],
         ),
         throwsArgumentError,
       );
@@ -422,11 +424,14 @@ void main() {
       expect(hint, isNotNull);
       expect(hint!.movedColor, equals(red));
       // Either 0 -> 1 or 1 -> 0
-      expect((hint.fromIndex == 0 && hint.toIndex == 1) ||
-             (hint.fromIndex == 1 && hint.toIndex == 0), isTrue);
+      expect(
+          (hint.fromIndex == 0 && hint.toIndex == 1) ||
+              (hint.fromIndex == 1 && hint.toIndex == 0),
+          isTrue);
     });
 
-    test('24. findHintMove recommends moving mixed tube ball to empty tube', () {
+    test('24. findHintMove recommends moving mixed tube ball to empty tube',
+        () {
       final GameState state = createTestState(
         tubes: <Tube>[
           Tube(balls: const <BallColor>[green, red]),

@@ -9,7 +9,8 @@ import '../../domain/services/time_service.dart';
 import 'audio_controller.dart';
 
 /// Provider for the [TimeService]. Defaults to [VietnamTimeService] (`Asia/Ho_Chi_Minh`, UTC+7).
-final Provider<TimeService> timeServiceProvider = Provider<TimeService>((Ref ref) {
+final Provider<TimeService> timeServiceProvider =
+    Provider<TimeService>((Ref ref) {
   return const VietnamTimeService();
 }, name: 'timeServiceProvider');
 
@@ -25,7 +26,8 @@ final Provider<EconomyRepository> economyRepositoryProvider =
 }, name: 'economyRepositoryProvider');
 
 /// Riverpod Notifier managing daily lives, undos, and hints across the application.
-final NotifierProvider<EconomyController, GameEconomy> economyControllerProvider =
+final NotifierProvider<EconomyController, GameEconomy>
+    economyControllerProvider =
     NotifierProvider<EconomyController, GameEconomy>(
   EconomyController.new,
   name: 'economyControllerProvider',
@@ -38,7 +40,11 @@ class EconomyController extends Notifier<GameEconomy> {
     final TimeService timeService = ref.watch(timeServiceProvider);
 
     GameEconomy stored = repo.getEconomy();
-    if (stored.hintCount > GameEconomy.defaultDailyHints || stored.hintCount == 0) {
+    if (stored.dailyLives > GameEconomy.defaultMaxDailyLives) {
+      stored = stored.copyWith(dailyLives: GameEconomy.defaultMaxDailyLives);
+      repo.saveEconomy(stored);
+    }
+    if (stored.hintCount == 0 && stored.lastDailyRefreshDate.isEmpty) {
       stored = stored.copyWith(hintCount: GameEconomy.defaultDailyHints);
       repo.saveEconomy(stored);
     }
@@ -51,14 +57,19 @@ class EconomyController extends Notifier<GameEconomy> {
     TimeService timeService,
     EconomyRepository repo,
   ) {
+    if (current.dailyLives > GameEconomy.defaultMaxDailyLives) {
+      current = current.copyWith(dailyLives: GameEconomy.defaultMaxDailyLives);
+      repo.saveEconomy(current);
+    }
     final String todayVn = timeService.getVietnamDateString();
     final int nowMs = timeService.nowUtc().millisecondsSinceEpoch;
 
     // Check if new player or a calendar day has elapsed in Asia/Ho_Chi_Minh
-    if (current.lastDailyRefreshDate.isEmpty || current.lastDailyRefreshDate != todayVn) {
+    if (current.lastDailyRefreshDate.isEmpty ||
+        current.lastDailyRefreshDate != todayVn) {
       // Basic clock rollback check: if user moved device clock back before last recorded event
-      final bool isClockRollback =
-          current.lastKnownTimestampMs > 0 && nowMs < (current.lastKnownTimestampMs - 60000);
+      final bool isClockRollback = current.lastKnownTimestampMs > 0 &&
+          nowMs < (current.lastKnownTimestampMs - 60000);
 
       if (!isClockRollback) {
         final GameEconomy refreshed = current.refreshForNewDay(todayVn, nowMs);
@@ -67,9 +78,22 @@ class EconomyController extends Notifier<GameEconomy> {
       }
     }
 
+    // Reset rewarded lives quota if calendar date changed according to Vietnam timezone
+    if (current.lastRewardedLivesDate.isNotEmpty &&
+        current.lastRewardedLivesDate != todayVn &&
+        current.rewardedLivesToday > 0) {
+      final GameEconomy resetRewarded = current.copyWith(
+        rewardedLivesToday: 0,
+        lastRewardedLivesDate: todayVn,
+      );
+      repo.saveEconomy(resetRewarded);
+      return resetRewarded;
+    }
+
     // Update last known timestamp monotonically
     if (nowMs > current.lastKnownTimestampMs) {
-      final GameEconomy updatedTimestamp = current.copyWith(lastKnownTimestampMs: nowMs);
+      final GameEconomy updatedTimestamp =
+          current.copyWith(lastKnownTimestampMs: nowMs);
       repo.saveEconomy(updatedTimestamp);
       return updatedTimestamp;
     }
@@ -157,6 +181,41 @@ class EconomyController extends Notifier<GameEconomy> {
     await repo.saveEconomy(updated);
   }
 
+  /// Adds 1 rewarded hint upon watching a rewarded ad.
+  Future<void> addRewardedHint([int count = 1]) async {
+    if (count <= 0) return;
+    final TimeService timeService = ref.read(timeServiceProvider);
+    final int nowMs = timeService.nowUtc().millisecondsSinceEpoch;
+
+    final GameEconomy updated = state.addRewardedHints(count, nowMs: nowMs);
+    state = updated;
+
+    final EconomyRepository repo = ref.read(economyRepositoryProvider);
+    await repo.saveEconomy(updated);
+  }
+
+  /// Adds exactly 1 rewarded life upon watching a rewarded ad (max 3/day in Asia/Ho_Chi_Minh).
+  ///
+  /// Returns `true` if granted, or `false` if daily rewarded limit (3) was already reached.
+  Future<bool> addRewardedLife() async {
+    refreshDailyQuotasIfNeeded();
+    if (!state.canWatchAdForLife) return false;
+
+    final TimeService timeService = ref.read(timeServiceProvider);
+    final String todayVn = timeService.getVietnamDateString();
+    final int nowMs = timeService.nowUtc().millisecondsSinceEpoch;
+
+    final GameEconomy updated = state.addRewardedLife(
+      todayVn: todayVn,
+      nowMs: nowMs,
+    );
+    state = updated;
+
+    final EconomyRepository repo = ref.read(economyRepositoryProvider);
+    await repo.saveEconomy(updated);
+    return true;
+  }
+
   /// Saves the current mid-game session snapshot.
   Future<void> saveActiveSession(ActiveGameSession session) async {
     final EconomyRepository repo = ref.read(economyRepositoryProvider);
@@ -164,7 +223,8 @@ class EconomyController extends Notifier<GameEconomy> {
   }
 
   /// Alias for [saveActiveSession].
-  Future<void> saveSession(ActiveGameSession session) => saveActiveSession(session);
+  Future<void> saveSession(ActiveGameSession session) =>
+      saveActiveSession(session);
 
   /// Clears active game session upon level completion or loss.
   Future<void> clearActiveSession() async {

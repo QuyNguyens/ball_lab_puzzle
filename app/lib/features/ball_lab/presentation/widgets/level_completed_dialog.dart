@@ -194,7 +194,9 @@ class _LevelCompletedDialogState extends State<LevelCompletedDialog>
                   ],
                 ),
                 child: Icon(
-                  isMilestone ? Icons.military_tech_rounded : Icons.science_rounded,
+                  isMilestone
+                      ? Icons.military_tech_rounded
+                      : Icons.science_rounded,
                   size: 42,
                   color: Colors.white,
                 ),
@@ -324,8 +326,7 @@ class _LevelCompletedDialogState extends State<LevelCompletedDialog>
                             horizontal: 10, vertical: 4),
                         decoration: const BoxDecoration(
                           color: Colors.black26,
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
                         ),
                         child: Text(
                           l10n.starThresholds(
@@ -388,7 +389,8 @@ class _LevelCompletedDialogState extends State<LevelCompletedDialog>
                     // Next Level button
                     Expanded(
                       child: FilledButton(
-                        key: const ValueKey<String>('victory_next_level_button'),
+                        key:
+                            const ValueKey<String>('victory_next_level_button'),
                         onPressed: widget.onNextLevel,
                         style: FilledButton.styleFrom(
                           backgroundColor: accentColor,

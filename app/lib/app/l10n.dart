@@ -17,7 +17,7 @@ import '../l10n/app_localizations.dart';
 /// removes the line.
 const List<LocalizationsDelegate<Object?>> appLocalizationsDelegates =
     <LocalizationsDelegate<Object?>>[
-      ...AppLocalizations.localizationsDelegates,
-      CoreLocalizations.delegate,
-      ...GlobalMaterialLocalizations.delegates,
-    ];
+  ...AppLocalizations.localizationsDelegates,
+  CoreLocalizations.delegate,
+  ...GlobalMaterialLocalizations.delegates,
+];

@@ -1,20 +1,25 @@
 import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/models/game_economy.dart';
+import '../../domain/services/rewarded_ad_service.dart';
 import '../../domain/services/time_service.dart';
+import '../controllers/economy_controller.dart';
 
 /// Modal dialog presented when the player has 0 available lives and attempts to start a game.
 ///
-/// Displays countdown to the next midnight refresh in Asia/Ho_Chi_Minh and placeholders
-/// for future Rewarded Ads and In-App Purchases.
-class OutOfLivesDialog extends StatefulWidget {
+/// Displays countdown to the next midnight refresh in Asia/Ho_Chi_Minh and supports
+/// watching Rewarded Ads for +1 Life (strictly bounded to max 3 lives per day in Vietnam timezone).
+class OutOfLivesDialog extends ConsumerStatefulWidget {
   const OutOfLivesDialog({
     super.key,
     this.timeUntilRefill,
     this.onBackToMap,
     this.onWatchAd,
     this.onBuyLives,
+    this.onLifeGranted,
   });
 
   /// Duration remaining until midnight rollover in Vietnam.
@@ -23,19 +28,23 @@ class OutOfLivesDialog extends StatefulWidget {
   /// Callback when player elects to return to the Level Map.
   final VoidCallback? onBackToMap;
 
-  /// Optional future callback for Rewarded Ads.
+  /// Optional override callback for watching Rewarded Ads.
   final VoidCallback? onWatchAd;
 
   /// Optional future callback for In-App Purchases.
   final VoidCallback? onBuyLives;
 
+  /// Callback triggered after +1 life has been successfully granted via ad.
+  final VoidCallback? onLifeGranted;
+
   @override
-  State<OutOfLivesDialog> createState() => _OutOfLivesDialogState();
+  ConsumerState<OutOfLivesDialog> createState() => _OutOfLivesDialogState();
 }
 
-class _OutOfLivesDialogState extends State<OutOfLivesDialog> {
+class _OutOfLivesDialogState extends ConsumerState<OutOfLivesDialog> {
   late Duration _remaining;
   Timer? _timer;
+  bool _isRequestingAd = false;
 
   @override
   void initState() {
@@ -67,9 +76,106 @@ class _OutOfLivesDialogState extends State<OutOfLivesDialog> {
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
+  void _showToast(BuildContext context, String message) {
+    final ScaffoldMessengerState? messenger =
+        ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) return;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: const Color(0xFF1E293B),
+          content: Text(
+            message,
+            style: const TextStyle(color: Colors.white),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+  }
+
+  Future<void> _handleWatchAd({
+    required BuildContext context,
+    required GameEconomy economy,
+    required RewardedAdState adState,
+    required AppLocalizations l10n,
+  }) async {
+    if (widget.onWatchAd != null) {
+      widget.onWatchAd!();
+      return;
+    }
+
+    if (_isRequestingAd) return;
+
+    if (!economy.canWatchAdForLife) {
+      _showToast(context, l10n.adDailyLimitReachedToast);
+      return;
+    }
+
+    if (!adState.isReady) {
+      if (adState.isLoading) {
+        _showToast(context, l10n.adNotReadyMessage);
+      } else {
+        ref.read(rewardedAdServiceProvider.notifier).loadAd();
+        _showToast(context, l10n.adNotReadyMessage);
+      }
+      return;
+    }
+
+    setState(() {
+      _isRequestingAd = true;
+    });
+
+    bool rewardGranted = false;
+    ref.read(rewardedAdServiceProvider.notifier).showAd(
+      onUserEarnedReward: () async {
+        if (rewardGranted) return;
+        rewardGranted = true;
+        final bool success = await ref
+            .read(economyControllerProvider.notifier)
+            .addRewardedLife();
+        if (success && mounted) {
+          _showToast(context, l10n.adRewardLifeGrantedToast);
+          widget.onLifeGranted?.call();
+          Navigator.of(context).pop();
+        }
+      },
+      onAdClosed: () {
+        if (mounted) {
+          setState(() {
+            _isRequestingAd = false;
+          });
+        } else {
+          _isRequestingAd = false;
+        }
+      },
+      onAdFailedToShow: (String reason) {
+        if (mounted) {
+          setState(() {
+            _isRequestingAd = false;
+          });
+          _showToast(context, l10n.adNotReadyMessage);
+        } else {
+          _isRequestingAd = false;
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final GameEconomy economy = ref.watch(economyControllerProvider);
+    final RewardedAdState adState = ref.watch(rewardedAdServiceProvider);
+
+    final bool canWatch = economy.canWatchAdForLife;
+    final String adTag = canWatch
+        ? '${economy.rewardedLivesToday}/${GameEconomy.maxDailyRewardedLives}'
+        : l10n.adDailyLimitReachedTag;
+    final bool isAdLoading =
+        _isRequestingAd || (canWatch && adState.isLoading);
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -190,13 +296,19 @@ class _OutOfLivesDialogState extends State<OutOfLivesDialog> {
 
             const SizedBox(height: 18),
 
-            // Placeholder 1: Rewarded Ad (+1 Life) - Coming Soon
-            _FutureExpansionOption(
-              icon: Icons.play_circle_outline_rounded,
+            // Rewarded Ad (+1 Life) Option
+            _RewardedLifeOption(
+              icon: Icons.ondemand_video_rounded,
               title: l10n.watchVideoOption,
-              tag: l10n.comingSoonTag,
-              onTap: widget.onWatchAd,
-              isEnabled: widget.onWatchAd != null,
+              tag: adTag,
+              isLoading: isAdLoading,
+              canWatch: canWatch,
+              onTap: () => _handleWatchAd(
+                context: context,
+                economy: economy,
+                adState: adState,
+                l10n: l10n,
+              ),
             ),
 
             const SizedBox(height: 8),
@@ -225,14 +337,122 @@ class _OutOfLivesDialogState extends State<OutOfLivesDialog> {
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                 ),
-                onPressed: widget.onBackToMap ?? () => Navigator.of(context).pop(),
+                onPressed:
+                    widget.onBackToMap ?? () => Navigator.of(context).pop(),
                 child: Text(
                   l10n.buttonBackToMap,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900),
+                  style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w900),
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RewardedLifeOption extends StatelessWidget {
+  const _RewardedLifeOption({
+    required this.icon,
+    required this.title,
+    required this.tag,
+    required this.isLoading,
+    required this.canWatch,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String tag;
+  final bool isLoading;
+  final bool canWatch;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color backgroundColor = canWatch
+        ? const Color(0xFF1E293B)
+        : Colors.white.withValues(alpha: 0.03);
+
+    final Color borderColor = canWatch
+        ? const Color(0xFFF59E0B).withValues(alpha: 0.5)
+        : Colors.white.withValues(alpha: 0.08);
+
+    final Color iconColor = canWatch
+        ? const Color(0xFFFCD34D)
+        : Colors.white.withValues(alpha: 0.25);
+
+    final Color titleColor = canWatch
+        ? Colors.white
+        : Colors.white.withValues(alpha: 0.35);
+
+    final Color tagBgColor = canWatch
+        ? const Color(0xFFF59E0B).withValues(alpha: 0.2)
+        : Colors.white.withValues(alpha: 0.08);
+
+    final Color tagTextColor = canWatch
+        ? const Color(0xFFFCD34D)
+        : Colors.white.withValues(alpha: 0.35);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isLoading ? null : onTap,
+        borderRadius: const BorderRadius.all(Radius.circular(14)),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: const BorderRadius.all(Radius.circular(14)),
+            border: Border.all(color: borderColor, width: canWatch ? 1.5 : 1.0),
+          ),
+          child: Row(
+            children: <Widget>[
+              if (isLoading)
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFFFCD34D)),
+                  ),
+                )
+              else
+                Icon(icon, size: 20, color: iconColor),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: titleColor,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: tagBgColor,
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                ),
+                child: Text(
+                  tag,
+                  style: TextStyle(
+                    color: tagTextColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

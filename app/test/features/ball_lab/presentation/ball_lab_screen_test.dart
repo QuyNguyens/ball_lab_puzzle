@@ -12,6 +12,9 @@ import 'package:flutter_riverpod_template/features/ball_lab/presentation/widgets
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
+import 'package:flutter_riverpod_template/app/l10n.dart';
+import 'package:flutter_riverpod_template/l10n/app_localizations.dart';
+
 void main() {
   Widget createTestApp({
     List<Override> overrides = const <Override>[],
@@ -20,6 +23,8 @@ void main() {
     return ProviderScope(
       overrides: overrides,
       child: MaterialApp(
+        localizationsDelegates: appLocalizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: BallLabScreen(initialLevelId: initialLevelId),
       ),
     );
@@ -36,9 +41,12 @@ void main() {
       expect(find.text('MOVES LEFT: 18'), findsOneWidget);
       expect(find.textContaining('Sort all balls by color'), findsOneWidget);
       expect(find.byType(TestTubeWidget), findsNWidgets(5));
-      expect(find.byKey(const ValueKey<String>('action_restart_button')), findsOneWidget);
-      expect(find.byKey(const ValueKey<String>('action_undo_button')), findsOneWidget);
-      expect(find.byKey(const ValueKey<String>('action_hint_button')), findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('action_restart_button')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('action_undo_button')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('action_hint_button')),
+          findsOneWidget);
     });
 
     testWidgets('2. Move counter updates after a valid move', (
@@ -59,7 +67,8 @@ void main() {
       expect(find.text('MOVES LEFT: 17'), findsOneWidget);
     });
 
-    testWidgets('3. Tapping tubes follows controller selection and move behavior', (
+    testWidgets(
+        '3. Tapping tubes follows controller selection and move behavior', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(createTestApp());
@@ -99,7 +108,8 @@ void main() {
       expect(find.text('MOVES LEFT: 17'), findsOneWidget);
 
       // Tap Undo
-      await tester.tap(find.byKey(const ValueKey<String>('action_undo_button')));
+      await tester
+          .tap(find.byKey(const ValueKey<String>('action_undo_button')));
       await tester.pumpAndSettle();
 
       expect(find.text('MOVES LEFT: 18'), findsOneWidget);
@@ -113,7 +123,8 @@ void main() {
       expect(find.text('MOVES LEFT: 17'), findsOneWidget);
 
       // Tap Restart
-      await tester.tap(find.byKey(const ValueKey<String>('action_restart_button')));
+      await tester
+          .tap(find.byKey(const ValueKey<String>('action_restart_button')));
       await tester.pumpAndSettle();
 
       expect(find.text('MOVES LEFT: 18'), findsOneWidget);
@@ -145,8 +156,10 @@ void main() {
       expect(find.byType(LevelCompletedDialog), findsOneWidget);
       expect(find.text('EXPERIMENT COMPLETE!'), findsOneWidget);
       expect(find.text('Level 1 Mastered'), findsOneWidget);
-      expect(find.byKey(const ValueKey<String>('victory_play_again_button')), findsOneWidget);
-      expect(find.byKey(const ValueKey<String>('victory_next_level_button')), findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('victory_play_again_button')),
+          findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('victory_next_level_button')),
+          findsOneWidget);
     });
 
     testWidgets('6. Next Level action works when next level exists', (
@@ -172,7 +185,8 @@ void main() {
       expect(find.byType(LevelCompletedDialog), findsOneWidget);
 
       // Tap Next Level
-      await tester.tap(find.byKey(const ValueKey<String>('victory_next_level_button')));
+      await tester
+          .tap(find.byKey(const ValueKey<String>('victory_next_level_button')));
       await tester.pumpAndSettle();
 
       // Dialog is dismissed and Level 2 is loaded
@@ -198,7 +212,8 @@ void main() {
       expect(find.byType(TestTubeWidget), findsNWidgets(5));
     });
 
-    testWidgets('8. Drag and drop ball from tube 0 to tube 3 executes valid move', (
+    testWidgets(
+        '8. Drag and drop ball from tube 0 to tube 3 executes valid move', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(createTestApp());
@@ -254,7 +269,8 @@ void main() {
       expect(find.text('MOVES LEFT: 18'), findsOneWidget);
     });
 
-    testWidgets('10. Drag and drop back to source tube snaps back without moving', (
+    testWidgets(
+        '10. Drag and drop back to source tube snaps back without moving', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(createTestApp());
@@ -297,13 +313,16 @@ void main() {
       expect(find.text('MOVES LEFT: 18'), findsOneWidget);
     });
 
-    testWidgets('12. Tapping Hint button displays visual bounce and ghost preview ball', (
+    testWidgets(
+        '12. Tapping Hint button displays visual bounce and ghost preview ball',
+        (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(createTestApp());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const ValueKey<String>('action_hint_button')));
+      await tester
+          .tap(find.byKey(const ValueKey<String>('action_hint_button')));
       await tester.pump(const Duration(milliseconds: 100));
 
       // Visual hint should activate on source and target tubes directly on board
@@ -326,11 +345,13 @@ void main() {
 
       // After timeout, hint effects clear automatically
       expect(
-        find.byWidgetPredicate((Widget w) => w is TestTubeWidget && w.isHintSource),
+        find.byWidgetPredicate(
+            (Widget w) => w is TestTubeWidget && w.isHintSource),
         findsNothing,
       );
       expect(
-        find.byWidgetPredicate((Widget w) => w is TestTubeWidget && w.isHintTarget),
+        find.byWidgetPredicate(
+            (Widget w) => w is TestTubeWidget && w.isHintTarget),
         findsNothing,
       );
     });
@@ -358,10 +379,12 @@ void main() {
       // Since maxMoves is 1, running out of moves displays LevelFailedDialog
       expect(find.byType(LevelFailedDialog), findsOneWidget);
       expect(find.text('OUT OF MOVES!'), findsOneWidget);
-      expect(find.byKey(const ValueKey<String>('defeat_play_again_button')), findsOneWidget);
+      expect(find.byKey(const ValueKey<String>('defeat_play_again_button')),
+          findsOneWidget);
     });
 
-    testWidgets('14. Play Again from failure dialog restarts level and resets moves', (
+    testWidgets(
+        '14. Play Again from failure dialog restarts level and resets moves', (
       WidgetTester tester,
     ) async {
       final _MockTwoLevelService mockService = _MockTwoLevelService();
@@ -384,7 +407,8 @@ void main() {
       expect(find.byType(LevelFailedDialog), findsOneWidget);
 
       // Tap Play Again
-      await tester.tap(find.byKey(const ValueKey<String>('defeat_play_again_button')));
+      await tester
+          .tap(find.byKey(const ValueKey<String>('defeat_play_again_button')));
       await tester.pumpAndSettle();
 
       // Dialog is dismissed and moves are restored
@@ -392,7 +416,9 @@ void main() {
       expect(find.text('MOVES LEFT: 1'), findsOneWidget);
     });
 
-    testWidgets('15. Winning on the exact last move displays victory dialog, not defeat', (
+    testWidgets(
+        '15. Winning on the exact last move displays victory dialog, not defeat',
+        (
       WidgetTester tester,
     ) async {
       final _MockTwoLevelService mockService = _MockTwoLevelService();

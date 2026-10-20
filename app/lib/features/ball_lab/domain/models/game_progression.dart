@@ -81,11 +81,13 @@ class GameProgression {
   }) {
     final LevelRecord previous = getRecord(levelId);
     final int safeStars = stars.clamp(0, 3);
-    final int newStars = safeStars > previous.stars ? safeStars : previous.stars;
+    final int newStars =
+        safeStars > previous.stars ? safeStars : previous.stars;
 
     int newBestMoves = movesUsed;
     if (previous.isCompleted && previous.bestMoves != null) {
-      newBestMoves = movesUsed < previous.bestMoves! ? movesUsed : previous.bestMoves!;
+      newBestMoves =
+          movesUsed < previous.bestMoves! ? movesUsed : previous.bestMoves!;
     }
 
     final LevelRecord updatedRecord = LevelRecord(
@@ -120,7 +122,6 @@ class GameProgression {
     };
   }
 
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -134,7 +135,8 @@ class GameProgression {
   }
 
   @override
-  int get hashCode => Object.hash(unlockedLevelMax, Object.hashAll(records.entries));
+  int get hashCode =>
+      Object.hash(unlockedLevelMax, Object.hashAll(records.entries));
 
   @override
   String toString() =>

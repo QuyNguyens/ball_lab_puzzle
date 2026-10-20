@@ -22,7 +22,8 @@ class PuzzleSolver {
   static String _canonicalStateKey(GameState s) {
     final List<String> tubeKeys = s.tubes.map((Tube t) {
       return t.balls.map((BallColor b) => b.id).join(',');
-    }).toList()..sort();
+    }).toList()
+      ..sort();
     return tubeKeys.join('|');
   }
 

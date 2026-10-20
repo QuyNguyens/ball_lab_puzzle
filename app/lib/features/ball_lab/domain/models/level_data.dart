@@ -15,21 +15,21 @@ class LevelData {
     int? threeStarMoves,
     int? twoStarMoves,
     this.isMilestone = false,
-  }) : maxMoves = _resolveMaxMoves(maxMoves, parMoves),
-       threeStarMoves = _resolveThreeStar(
-         threeStarMoves,
-         parMoves,
-         minMoves,
-         maxMoves,
-       ),
-       twoStarMoves = _resolveTwoStar(
-         twoStarMoves,
-         threeStarMoves,
-         parMoves,
-         minMoves,
-         maxMoves,
-       ),
-       initialTubes = List<Tube>.unmodifiable(initialTubes) {
+  })  : maxMoves = _resolveMaxMoves(maxMoves, parMoves),
+        threeStarMoves = _resolveThreeStar(
+          threeStarMoves,
+          parMoves,
+          minMoves,
+          maxMoves,
+        ),
+        twoStarMoves = _resolveTwoStar(
+          twoStarMoves,
+          threeStarMoves,
+          parMoves,
+          minMoves,
+          maxMoves,
+        ),
+        initialTubes = List<Tube>.unmodifiable(initialTubes) {
     validate(this);
   }
 

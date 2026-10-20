@@ -11,9 +11,8 @@ plugins {
 fun identity(key: String): String = providers.gradleProperty("app.$key").get()
 
 // Release signing. Each value comes from an environment variable (CI) or else
-// from android/key.properties (local, gitignored). With no keystore set,
-// release builds are signed with the debug keys, so CI's unsigned builds and
-// `flutter run --release` keep working; a store upload needs a real keystore.
+// from android/key.properties (local, gitignored). Release builds strictly require
+// the upload keystore and fail fast if missing (no fallback to debug keys).
 //   ANDROID_KEYSTORE_PATH     or key.properties storeFile (relative to android/)
 //   ANDROID_KEYSTORE_PASSWORD or key.properties storePassword
 //   ANDROID_KEY_ALIAS         or key.properties keyAlias
@@ -56,6 +55,9 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         resValue("string", "app_name", "Ball Lab Puzzle")
+        val admobAppId = providers.gradleProperty("app.admobAppId").orNull?.takeIf { it.isNotBlank() }
+            ?: "ca-app-pub-3940256099942544~3347511713"
+        manifestPlaceholders["admobAppId"] = admobAppId
     }
 
     // AGP turns resValue off by default; we enable it for app_name.
@@ -64,21 +66,18 @@ android {
     }
 
     signingConfigs {
-        if (releaseKeystore != null) {
-            create("release") {
-                storeFile = releaseKeystore
-                storePassword = signingValue("ANDROID_KEYSTORE_PASSWORD", "storePassword")
-                keyAlias = signingValue("ANDROID_KEY_ALIAS", "keyAlias")
-                keyPassword = signingValue("ANDROID_KEY_PASSWORD", "keyPassword")
-            }
+        create("release") {
+            storeFile = releaseKeystore
+            storePassword = signingValue("ANDROID_KEYSTORE_PASSWORD", "storePassword")
+            keyAlias = signingValue("ANDROID_KEY_ALIAS", "keyAlias")
+            keyPassword = signingValue("ANDROID_KEY_PASSWORD", "keyPassword")
         }
     }
 
     buildTypes {
         release {
-            // The release keystore when one is set (see signingValue above),
-            // otherwise the debug keys.
-            signingConfig = signingConfigs.getByName(if (releaseKeystore != null) "release" else "debug")
+            // Strictly signed with the release keystore; fails fast if missing.
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

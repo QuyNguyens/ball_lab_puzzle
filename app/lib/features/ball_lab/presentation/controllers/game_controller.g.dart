@@ -20,15 +20,15 @@ final class GameEngineProvider
     with $Provider<GameEngine> {
   /// Provider for the pure Dart [GameEngine].
   GameEngineProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'gameEngineProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'gameEngineProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
 
   @override
   String debugGetCreateSourceHash() => _$gameEngineHash();
@@ -61,25 +61,21 @@ final levelProviderServiceProvider = LevelProviderServiceProvider._();
 
 /// Provider for the [LevelProviderService].
 
-final class LevelProviderServiceProvider
-    extends
-        $FunctionalProvider<
-          LevelProviderService,
-          LevelProviderService,
-          LevelProviderService
-        >
-    with $Provider<LevelProviderService> {
+final class LevelProviderServiceProvider extends $FunctionalProvider<
+    LevelProviderService,
+    LevelProviderService,
+    LevelProviderService> with $Provider<LevelProviderService> {
   /// Provider for the [LevelProviderService].
   LevelProviderServiceProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'levelProviderServiceProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'levelProviderServiceProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
 
   @override
   String debugGetCreateSourceHash() => _$levelProviderServiceHash();
@@ -88,7 +84,8 @@ final class LevelProviderServiceProvider
   @override
   $ProviderElement<LevelProviderService> $createElement(
     $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
+  ) =>
+      $ProviderElement(pointer);
 
   @override
   LevelProviderService create(Ref ref) {
@@ -138,15 +135,15 @@ final class GameControllerProvider
   /// 4. Tapping another valid source switches the selection.
   /// 5. Tapping an invalid destination retains the source selection for retry.
   GameControllerProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'gameControllerProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'gameControllerProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
 
   @override
   String debugGetCreateSourceHash() => _$gameControllerHash();
@@ -181,14 +178,11 @@ abstract class _$GameController extends $Notifier<GamePlayState> {
   @override
   WhenComplete runBuild() {
     final ref = this.ref as $Ref<GamePlayState, GamePlayState>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<GamePlayState, GamePlayState>,
-              GamePlayState,
-              Object?,
-              Object?
-            >;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<GamePlayState, GamePlayState>,
+        GamePlayState,
+        Object?,
+        Object?>;
     return element.handleCreate(ref, build);
   }
 }
